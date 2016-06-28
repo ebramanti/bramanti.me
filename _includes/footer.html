@@ -1,0 +1,6 @@
+<footer id="footer">
+    <p class="small">© Copyright {{ site.time | date: '%Y' }} {{ site.author }}</p>
+    {% if jekyll.environment == "production" %}
+        <a href="https://heapanalytics.com/?utm_source=badge"><img style="width:108px;height:41px" src="//heapanalytics.com/img/badgeLight.png" alt="Heap | Mobile and Web Analytics" /></a>
+    {% endif %}
+</footer>

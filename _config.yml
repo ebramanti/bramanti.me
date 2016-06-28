@@ -1,0 +1,46 @@
+name: Edward Bramanti
+description: I'm a Software Engineer who is passionate about programming languages, well-designed APIs, and open source.
+meta_description: "I'm a Software Engineer who is passionate about programming languages, well-designed APIs, and open source."
+
+aboutPage: true
+
+markdown: kramdown
+highlighter: rouge
+
+gems:
+  - jemoji
+  - jekyll-paginate
+
+paginate: 10
+baseurl: /
+domain_name: 'http://yourblog-domain.com'
+heap_analytics: '7009234'
+disqus: true
+disqus_shortname: 'bramanti'
+
+# Details for the RSS feed generator
+url:            'https://bramanti.me'
+author:         'Edward Bramanti'
+authorTwitter:  'jadengore'
+
+permalink:       /:title/
+
+defaults:
+    -
+        scope:
+            path: "" # empty string for all files
+            type: pages
+        values:
+            layout: default
+    -
+        scope:
+            path: "" # empty string for all files
+            type: posts
+        values:
+            layout: post
+    -
+        scope:
+            path: ""
+            type: drafts
+        values:
+            layout: post
