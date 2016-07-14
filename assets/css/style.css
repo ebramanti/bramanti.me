@@ -293,6 +293,16 @@ hr {
 
 span.code { font-family:Menlo, Monaco, Courier; background-color:#EEE; font-size:14px; }
 
+p > code, tt {
+    padding: 1px 3px;
+    font-family: Inconsolata, monospace, sans-serif;
+    font-size: 0.95em;
+    white-space: pre-wrap;
+    border: #E3EDF3 1px solid;
+    background: #F7FAFB;
+    border-radius: 2px;
+}
+
 pre	{
 	font-family:Menlo, Monaco, Courier;
 	white-space:pre-wrap;
