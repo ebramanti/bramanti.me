@@ -7,7 +7,7 @@ tags:
 - eslint
 - configuration
 ---
-At VideoAmp, we work with Javascript **A LOT**. To maintain code uniformity across multiple projects and avoid common Javascript errors while working, ESLint is an invaluable tool. It has personally made me a better developer by providing helpful static analysis. The tooling and support built around the open-source checker is some of the best in the JS community.
+At VideoAmp, we work with JavaScript **A LOT**. To maintain code uniformity across multiple projects and avoid common Javascript errors while working, [ESLint](http://eslint.org/) is an invaluable tool. It has personally made me a better developer by providing helpful static analysis. The tooling and support built around the open-source checker is some of the best in the JS community.
 
 The biggest pain point of working with ESLint is that while it encourages uniformity, some organizations are unaware of the tools available to make their own style guides. While a project-level configuration may work for a small organization with one code repository, it scales poorly. As your company starts working on many different JS projects, new rules can crop up leading to different rules for different projects.
 
@@ -21,6 +21,7 @@ Of course, after I go through the song and dance of setting this up for VideoAmp
 After setting up your module, you can easily add an `index.js` entry point. Here's an example:
 
 _index.js_
+
 ```js
 module.exports = {
     rules: {
@@ -32,6 +33,7 @@ module.exports = {
 Once you have this set up, it's as simple as adding this to a project's `.eslintrc`:
 
 _.eslintrc_
+
 ```js
 {
   "extends": "eslint-config-<YOUR_ORGANIZATION>"
@@ -44,6 +46,7 @@ Some teams are very opinionated on code style, while some are just looking for a
 If you want to extend an existing styleguide in your organization's config, it's relatively straightforward. Simply add the styleguide to your `peerDependencies` in your `package.json`, and extend it in your `index.js` file.
 
 _index.js_
+
 ```js
 module.exports = {
     extends: ["eslint-config-airbnb-base"],
@@ -61,6 +64,7 @@ ESLint allows you to share multiple configs by adding another file to your organ
 In our `.eslintrc` it would look something like this:
 
 .eslintrc
+
 ```js
 {
   "extends": "eslint-config-<YOUR_ORGANIZATION>/<OTHER_CONFIG>"
@@ -68,13 +72,15 @@ In our `.eslintrc` it would look something like this:
 ```
 
 In your organization's config package, you could structure your files like so:
+
 - `base.js` - File where you keep rules for both ES5/ES6
 - `es5.js` - File where you keep your specific ES5 rules
 - `index.js` - Base entry point with default rules
 
-As an example, you can extend your `index.js` file from base like so:
+As an example, you can extend your `index.js` file from `base.js` like so:
 
 _index.js_
+
 ```js
 module.exports = {
     "extends": [
@@ -92,6 +98,7 @@ module.exports = {
 If you wanted ES5 rules, it's as simple as specifying that in your `.eslintrc`:
 
 _.eslintrc_
+
 ```js
 {
   "extends": "eslint-config-<YOUR_ORGANIZATION>/es5"
@@ -99,6 +106,6 @@ _.eslintrc_
 ```
 
 ## One Config to Rule them All
-For your organization, this now means that all of your styles and rules are consolidated in one place. This means you only have to change your organization config module in order to update your styles across your many repos, microservices, and projects.
+So what's the real benefit to your organization here? All of your styles and rules are consolidated in one place. This means you only have to change your organization config module in order to update your styles across your many repos, microservices, and projects.
 
 You can check out VideoAmp's own open-source ESLint configuration module here:  [`eslint-config-videoamp`](https://github.com/VideoAmp/eslint-config-videoamp) ([it's on npm too](https://www.npmjs.com/package/eslint-config-videoamp)).
