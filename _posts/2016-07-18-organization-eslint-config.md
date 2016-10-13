@@ -30,7 +30,7 @@ module.exports = {
 };
 ```
 
-Once you have this set up, it's as simple as adding this to a project's `.eslintrc`:
+Once you have this set up, add this to your project's `.eslintrc`:
 
 _.eslintrc_
 
@@ -43,7 +43,7 @@ _.eslintrc_
 ## Building on top of existing styleguides
 Some teams are very opinionated on code style, while some are just looking for a place to start. At VideoAmp, we wanted to combine our opinions with style consensus in the JS community. To that end, we ended up extending Airbnb's base styleguide in our custom config.
 
-If you want to extend an existing styleguide in your organization's config, it's relatively straightforward. Simply add the styleguide to your `peerDependencies` in your `package.json`, and extend it in your `index.js` file.
+If you want to use an existing styleguide in your organization's config, simply add the styleguide to your `peerDependencies` in your `package.json`, and extend it in your `index.js` file.
 
 _index.js_
 
@@ -63,7 +63,7 @@ ESLint allows you to share multiple configs by adding another file to your organ
 
 In our `.eslintrc` it would look something like this:
 
-.eslintrc
+_.eslintrc_
 
 ```js
 {
@@ -73,9 +73,9 @@ In our `.eslintrc` it would look something like this:
 
 In your organization's config package, you could structure your files like so:
 
-- `base.js` - File where you keep rules for both ES5/ES6
-- `es5.js` - File where you keep your specific ES5 rules
-- `index.js` - Base entry point with default rules
+- **base.js** - File where you keep rules for both ES5/ES6
+- **es5.js** - File where you keep your specific ES5 rules
+- **index.js** - Base entry point with default rules
 
 As an example, you can extend your `index.js` file from `base.js` like so:
 
@@ -95,7 +95,7 @@ module.exports = {
 
 > As a note, [`require.resolve`](https://nodejs.org/api/globals.html#globals_require_resolve) allows you to look up and return the location of a module without loading it.
 
-If you wanted ES5 rules, it's as simple as specifying that in your `.eslintrc`:
+If you wanted ES5 rules, you may specify that in your `.eslintrc`:
 
 _.eslintrc_
 
