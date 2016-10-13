@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Set up an ESLint config for your organization"
-date:   2016-07-18
+date:   2016-10-12
 tags:
 - javascript
 - eslint
