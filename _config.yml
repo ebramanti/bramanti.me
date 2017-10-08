@@ -1,7 +1,6 @@
 # Mandatory settings
 
 name: Edward Bramanti
-description: I'm a Software Engineer who is passionate about programming languages, well-designed APIs, and open source.
 paginate: 25
 url: https://bramanti.me # add your site url (format: https://example.com/)
 blog_theme: dark # Or use dark
