@@ -1,12 +1,3 @@
-{% if page.thumb_image %}
-  {% if page.thumb_image contains '://' %}
-    {% assign thumb_image = page.thumb_image %}
-  {% else %}
-    {% assign thumb_image = page.thumb_image | asset_path | absolute_url %}
-  {% endif %}
-{% else %}
-  {% assign thumb_image = 'og-image.jpg' | asset_path | absolute_url %}
-{% endif %}
 <head>
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   <title>{{ site.name }} | {{ page.title }}</title>
@@ -26,7 +17,6 @@
   <meta name="twitter:description" content="{{ page.description }}">
   <meta name="twitter:image" content="{{ thumb_image }}">
 
-  <link rel="apple-touch-icon" href="{% asset_path apple-touch-icon.png %}">
   <link href="{{ 'feed.xml' | absolute_url }}" type="application/rss+xml" rel="alternate" title="{{ site.name }} Last 10 blog posts" />
 
   {% if site.local_fonts %}
