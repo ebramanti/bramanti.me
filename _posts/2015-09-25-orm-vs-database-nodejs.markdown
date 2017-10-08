@@ -22,15 +22,11 @@ My debugging journey started at an API resource that would take in an `id` and d
 
 You would be able to access an individual potato from this URI:
 
-```
-api/v1/potato/
-```
+> `api/v1/potato/`
 
 Here's what the request looked like:
 
-```
-DELETE api/v1/potato/120382342342341
-```
+> `DELETE api/v1/potato/120382342342341`
 
 The test that was failing should `404` if a resource is not found, so I made up some arbitrary id to show that the API would indeed respond with a `404` that the requested resource was not found. However, instead of getting a `404`, the API was giving me a `500`. In my test logs, the error `numutils.c at line 65` was all I had to work with. I dusted off my C hat and pressed on.
 
@@ -42,7 +38,7 @@ This isn't the first time I've had an error message returned with a C error from
 
 `numutils.c at line 75` was all that I had to go off of. [`numutils.c`](http://doxygen.postgresql.org/numutils_8c.html) is a very important file to Postgres' standard library, and in particular `pg_atoi`, the function in question for integer parsing. Here's an excerpt of where my problem was:
 
-```c
+{% highlight c %}
 case sizeof(int32):
     if (errno == ERANGE
 #if defined(HAVE_LONG_INT_64)
@@ -54,7 +50,7 @@ case sizeof(int32):
                 (errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
         errmsg("value \"%s\" is out of range for type integer", s))); // line 75
     break;
-```
+{% endhighlight %}
 
 Now that I have localized the issue, it is clear that Postgres' `MAX_INT` is less than the value of the `id` that I have for the potato above (`120382342342341`). After [a quick read through Postgres' numeric datatypes](http://www.postgresql.org/docs/9.1/static/datatype-numeric.html), I learned that Postgres' `MAX_INT` corresponds with signed 32-bit numbers (-2147483648 to +2147483647).
 
@@ -72,7 +68,7 @@ Beyond validating the range of the `id`, we also need to validate the numericali
 
 Here's a solution for the potato example:
 
-```js
+{% highlight js %}
 var INT_MAX = 2147483647;
 var isInvalidId = function(routeParam) {
   var integer = parseInt(routeParam);
@@ -90,7 +86,7 @@ var idParamValidator = function(req, res, next) {
     next();
   }
 };
-```
+{% endhighlight %}
 
 As you can see, I validate that routes that make use of the `id` route param in Express falls into this middleware validation. We validate that this is an integer using [`parseInt()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/parseInt), and then check if the result of the parse is `NaN`. If not, then we validate that it falls in our range. If it passes, great! On to the API logic. If not, we `400` with some useful error data for the client (id out of range).
 

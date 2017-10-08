@@ -26,16 +26,19 @@ One of the big promises of Koa is a add-what-you-need model. Therefore, Koa bund
 #### Freedom from Callback Hell
 For any Node.js developer, Koa is going to demand you to think differently. This is a really good thing in the long run: Koa completely ditches callbacks, and instead opts to use generators from the upcoming ECMAScript Harmony (ES6) release. Koa even requires a special build flag in Node to run:
 
-        node --harmony app.js
+{% highlight sh %}
+node --harmony app.js
 
-        # Bonus: io.js has necessary ES6 features already, no need for flag
-        iojs app.js
+# Bonus: io.js has necessary ES6 features already,
+# No need for flag.
+iojs app.js
+{% endhighlight %}
 
 Most of understanding Koa, as mentioned in the **tl;dr** above, has to do with understanding how generators work. If you don't know how generators work in JavaScript, [David Walsh wrote a great article explaining ES6's generators](http://davidwalsh.name/es6-generators).
 
 Below I've included an example of how the `yield` keyword allows you to avoid having to write long, nested callbacks in order to get the information you need. In this function, I set a random world's property `randomNumber` to a new random number in the Mongo database (note: the `*` notation denotes an ES6 generator function).
 
-```js
+{% highlight js %}
 function *worldUpdateQuery() {
   var randomId = getRandomNumber();
   var randomNumber = getRandomNumber();
@@ -48,15 +51,15 @@ function *worldUpdateQuery() {
     randomNumber: randomNumber
   }
 }
-```
+{% endhighlight %}
 
 In this case, `worlds.update()` is not the best example of the use of a callback, as it will only return a count of the records modified. However, take a look at how I write my find query for world models, you normally require a callback function in order to retrieve the data from a find.
 
-```js
+{% highlight js %}
 function *worldQuery() {
   return yield worlds.findOne({id: getRandomNumber()}, '-_id');
 }
-```
+{% endhighlight %}
 
 With `yield`, it executes and returns this asynchronous callback so that the data you need is set properly.
 
@@ -67,24 +70,24 @@ Koa takes an interesting approach to contexts. Koa encapsulates Node's request a
 
 First, let's take a look at a Koa context example from the Koa.js docs. You can read up more on the APIs for this Context object [here](http://koajs.com/#context).
 
-```js
+{% highlight js %}
 app.use(function *(){
   this; // is the Context
   this.request; // is a koa Request
   this.response; // is a koa Response
 });
-```
+{% endhighlight %}
 
 In TechEmpower's Framework Benchmarks, there are requirements that each framework has to meet in order to be included. 6 different routes must be implemented. Some examples are JSON serialization, plaintext serving, and database queries and updates. Let's take a look at the route handler I wrote for JSON serialization.
 
-```js
+{% highlight js %}
 function *jsonHandler() {
   this.set('Server', 'Koa');
   this.body = {
     message: "Hello, world!"
   }
 }
-```
+{% endhighlight %}
 
 Koa's APIs are written so that all I have to do is set `this.body` to whatever I want it to return. Since the `request` and `response` objects are all encapsulated together, it is easy to add data to the response. Normally, web frameworks have API calls that allow you to respond (`reply` for Hapi and `res.send` for Express, to name a few). Koa simply yields the response object with `this.body` (in this example) set to a JSON object. Since Koa functions are designed to have a unified model for middleware, access to these request and response objects are simple and intuitive.
 
@@ -102,7 +105,7 @@ An example of this is that I used Monk for my MongoDB driver for my Koa server. 
 
 However, things aren't always that easy. I was trying a different MongoDB driver earlier on in my project, and I ended up having to write stuff like this:
 
-```js
+{% highlight js %}
 var result = yield function(callback) {
     this.mongo.collection('world').update(
       {id: randomId},
@@ -110,7 +113,7 @@ var result = yield function(callback) {
       callback
     );
 }
-```
+{% endhighlight %}
 
 When you compare this to my query functions I wrote in the examples above, wrapping this manually is quite a pain. While this does still minimize the amount of code you have to write, having to do this all the time can quickly become a chore.
 

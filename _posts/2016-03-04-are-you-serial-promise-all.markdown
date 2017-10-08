@@ -8,7 +8,7 @@ tags:
 
 About a month ago, I came across an interesting problem at work where a database migration with [Knex](knexjs.org) was not working properly. An example similar to the actual problem is shown below:
 
-```javascript
+{% highlight js %}
 const Promise = require('bluebird');
 
 exports.up = function(knex) {
@@ -17,7 +17,8 @@ exports.up = function(knex) {
     knex.schema.table('potatoes', (table) => table.string('name'))
   ]);
 };
-```
+{% endhighlight %}
+
 The first promise renames a table from `tomatoes` to `potatoes`. The following promise adds the string column `name` to the newly renamed table `potatoes`. While there may seem to be nothing wrong here, this code resulted in an error, saying the table `potatoes` did not exist.
 
 It turns out the problem was the Promise collection itself. I had a preconceived notion that the API for [`Promise.all`](http://bluebirdjs.com/docs/api/promise.all.html) was a function that resolved a promise array sequentially. It turns out it [resolves asynchronous tasks concurrently](https://github.com/petkaantonov/bluebird/issues/134#issuecomment-37192469)!
@@ -28,7 +29,7 @@ My solution was to extend Bluebird with a `Promise.series` method that will take
 
 Here's the code I wrote for `Promise.series`:
 
-```javascript
+{% highlight js %}
 const Promise = require('bluebird');
 
 Promise.series = (promiseArr) => {
@@ -39,15 +40,15 @@ Promise.series = (promiseArr) => {
     });
   }, []);
 };
-```
+{% endhighlight %}
 
-The above implementation of series uses `Promise.reduce` to return a promise that will iterate through the promise array, and resolve each promise one after the other. This function will return an array of resolved values (the starting value is the empty array, and results are pushed in as the reducer executes). 
+The above implementation of series uses `Promise.reduce` to return a promise that will iterate through the promise array, and resolve each promise one after the other. This function will return an array of resolved values (the starting value is the empty array, and results are pushed in as the reducer executes).
 
 **There is a caveat**: for this method to work, we must wrap each promise in a function, almost like a factory. Promises must be wrapped because as soon as a promise is created, it begins execution (see `new Promise()` documentation [here](http://bluebirdjs.com/docs/api/new-promise.html)).
 
 Simple example below (thanks to [madeofpalk](https://news.ycombinator.com/user?id=madeofpalk) on Hacker News):
 
-```javascript
+{% highlight js %}
 const func1 = () => new Promise((resolve, reject) => {
     console.log('func1 start');
     setTimeout(() => {
@@ -70,13 +71,13 @@ Promise.series([func1, func2]);
 // func1 complete
 // func2 start
 // func2 complete
-```
+{% endhighlight %}
 
 This gives us the serial execution we desire, and it allows our example above to work!
 
 So, let's update the initial example with the new series method we have:
 
-```javascript
+{% highlight js %}
 const Promise = require('bluebird');
 
 exports.up = function(knex) {
@@ -85,7 +86,7 @@ exports.up = function(knex) {
     () => knex.schema.table('potatoes', (table) => table.string('name'))
   ]);
 };
-```
+{% endhighlight %}
 
 Presto! The first promise now resolves before the second promise transitions to pending, which means that the `potatoes` table now exists and we can add columns to it. By extending Bluebird, we now have a function for those rare cases when the performance benefits of parallel execution are derailed by a need for serial execution.
 

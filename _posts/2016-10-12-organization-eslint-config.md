@@ -13,7 +13,7 @@ The biggest pain point of working with ESLint is that while it encourages unifor
 
 While some projects do require specific rules, you want a good starting point for all of your projects. You want a shared ESLint configuration for your organization. Let me show you how to make one.
 
-## `eslint-config-<YOUR_ORGANIZATION>`
+## eslint-config-\<YOUR_ORGANIZATION\>
 Of course, after I go through the song and dance of setting this up for VideoAmp, I stumble upon [this article about shared configs](http://eslint.org/docs/developer-guide/shareable-configs) from ESLint's documentation. Creating a shareable config is as simple as starting with a naming convention. From the docs:
 
 > Shareable configs are simply npm packages that export a configuration object. To start, create a Node.js module like you normally would. Make sure the module name begins with `eslint-config-`, such as `eslint-config-myconfig`.
@@ -22,23 +22,23 @@ After setting up your module, you can easily add an `index.js` entry point. Here
 
 _index.js_
 
-```js
+{% highlight js %}
 module.exports = {
     rules: {
         quotes: ["error", "double", "avoid-escape"]
     }
 };
-```
+{% endhighlight %}
 
 Once you have this set up, add this to your project's `.eslintrc`:
 
 _.eslintrc_
 
-```js
+{% highlight js %}
 {
   "extends": "eslint-config-<YOUR_ORGANIZATION>"
 }
-```
+{% endhighlight %}
 
 ## Building on top of existing styleguides
 Some teams are very opinionated on code style, while some are just looking for a place to start. At VideoAmp, we wanted to combine our opinions with style consensus in the JS community. To that end, we ended up extending Airbnb's base styleguide in our custom config.
@@ -47,14 +47,14 @@ If you want to use an existing styleguide in your organization's config, simply 
 
 _index.js_
 
-```js
+{% highlight js %}
 module.exports = {
     extends: ["eslint-config-airbnb-base"],
     rules: {
         quotes: ["error", "double", "avoid-escape"]
     }
 };
-```
+{% endhighlight %}
 
 ## One Code Style, Multiple Dialects
 So you now have a way to carry across your ESLint configuration, perhaps with even some rules extended from other styleguides. However, say there's a scenario with a pre-ES6 codebase and you need specific rule subsets (one for ES5, one for ES6). Since some of our codebases at VideoAmp are in ES5, we still wanted a way to enforce best practices and rules.
@@ -65,11 +65,11 @@ In our `.eslintrc` it would look something like this:
 
 _.eslintrc_
 
-```js
+{% highlight js %}
 {
   "extends": "eslint-config-<YOUR_ORGANIZATION>/<OTHER_CONFIG>"
 }
-```
+{% endhighlight %}
 
 In your organization's config package, you could structure your files like so:
 
@@ -81,7 +81,7 @@ As an example, you can extend your `index.js` file from `base.js` like so:
 
 _index.js_
 
-```js
+{% highlight js %}
 module.exports = {
     "extends": [
         "eslint-config-airbnb-base",
@@ -91,7 +91,7 @@ module.exports = {
         quotes: ["error", "double", "avoid-escape"],
     },
 };
-```
+{% endhighlight %}
 
 > As a note, [`require.resolve`](https://nodejs.org/api/globals.html#globals_require_resolve) allows you to look up and return the location of a module without loading it.
 
@@ -99,11 +99,11 @@ If you wanted ES5 rules, you may specify that in your `.eslintrc`:
 
 _.eslintrc_
 
-```js
+{% highlight js %}
 {
   "extends": "eslint-config-<YOUR_ORGANIZATION>/es5"
 }
-```
+{% endhighlight %}
 
 ## One Config to Rule them All
 So what's the real benefit to your organization here? All of your styles and rules are consolidated in one place. This means you only have to change your organization config module in order to update your styles across your many repos, microservices, and projects.
