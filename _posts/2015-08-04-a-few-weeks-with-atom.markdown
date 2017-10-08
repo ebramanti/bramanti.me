@@ -18,7 +18,11 @@ Why is this? There's a lot of things I really don't like about Atom. It's not en
 
 OK, I know it is way more complex than that. However, when you think about the fact that Atom uses Chromium and Node.js, and it's processes include `Atom Helper`, it's hard to not think it's your second Chrome.
 
-![Chrome away from Chrome](/assets/images/a-few-weeks-with-atom/Screenshot-2015-08-04-00-06-54.png)
+<a href="/assets/images/a-few-weeks-with-atom/Screenshot-2015-08-04-00-06-54.png"
+   data-rjs="/assets/images/a-few-weeks-with-atom/Screenshot-2015-08-04-00-06-54.png"
+   class="fluidbox-trigger">
+  <img src="/assets/images/a-few-weeks-with-atom/Screenshot-2015-08-04-00-06-54.png" alt="Chrome away from Chrome" />
+</a>
 
 Performance is really hit or miss from me. Atom has come a long way with `v1.0`, and it is very usable compared to where it was when I first tried it out a year ago. [Electron](http://electron.atom.io/), the cross-platform framework that drives Atom, allows for a lot of great built-in features: Automatic updates, crash reporting, built-in Windows installers, debugging & profiling, and native menus & notifications for each platform.
 
@@ -28,7 +32,23 @@ However, it's web technologies running in Chromium and Node.js. Chrome memory ma
 
 I'll be honest, this subheading is complete clickbait. The whole point of Atom is to customize to your heart's content to get the experience that you want, and if you can't figure it out, follow some guides. However, I find the built-in packages with Atom still lacking even in `v1.0` on very basic things.
 
-A simple example is file renaming. Sublime Text has a very fast and nimble way to rename your current working file that's built into your Command Palette.![](/assets/images/a-few-weeks-with-atom/Screenshot-2015-08-04-00-16-36.png) While Atom has this feature as well, it must be installed with an external package ([tree-view](https://github.com/atom/tree-view)) and it has [many issues opened directly related to just the rename function](https://github.com/atom/tree-view/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aopen+rename).![](/assets/images/a-few-weeks-with-atom/Screenshot-2015-08-04-00-19-34.png) For a pretty common task in a working project, I'd expect this to be integrated as a pre-installed function, but it is not.
+A simple example is file renaming. Sublime Text has a very fast and nimble way to rename your current working file that's built into your Command Palette.
+
+<a href="/assets/images/a-few-weeks-with-atom/Screenshot-2015-08-04-00-16-36.png"
+   data-rjs="/assets/images/a-few-weeks-with-atom/Screenshot-2015-08-04-00-16-36.png"
+   class="fluidbox-trigger">
+  <img src="/assets/images/a-few-weeks-with-atom/Screenshot-2015-08-04-00-16-36.png" />
+</a>
+
+While Atom has this feature as well, it must be installed with an external package ([tree-view](https://github.com/atom/tree-view)) and it has [many issues opened directly related to just the rename function](https://github.com/atom/tree-view/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aopen+rename).
+
+<a href="/assets/images/a-few-weeks-with-atom/Screenshot-2015-08-04-00-19-34.png"
+   data-rjs="/assets/images/a-few-weeks-with-atom/Screenshot-2015-08-04-00-19-34.png"
+   class="fluidbox-trigger">
+  <img src="/assets/images/a-few-weeks-with-atom/Screenshot-2015-08-04-00-19-34.png" />
+</a>
+
+For a pretty common task in a working project, I'd expect this to be integrated as a pre-installed function, but it is not.
 
 This may seem like a nitpick, but I've had other experiences like this while attempting to set up Atom. I do not have the desire like some to spend a week customizing my editor to get basic features I'm looking for. Atom has a lot of the ones I love, but it's missing some of the critical ones that really up my workflow. It's taken a greater deal of time to set up Atom than it has with Sublime.
 
@@ -49,17 +69,30 @@ What Atom has shown is the majority of their packages, once configured properly,
 **The First text editor I've used with a better GUI than Sublime Text**
 
 Seriously, look at this magnificence...
-![Cash.](/assets/images/a-few-weeks-with-atom/Screenshot-2015-08-04-00-40-08.png)
+
+<a href="/assets/images/a-few-weeks-with-atom/Screenshot-2015-08-04-00-40-08.png"
+   data-rjs="/assets/images/a-few-weeks-with-atom/Screenshot-2015-08-04-00-40-08.png"
+   class="fluidbox-trigger">
+  <img src="/assets/images/a-few-weeks-with-atom/Screenshot-2015-08-04-00-40-08.png" alt="Cash." />
+</a>
 
 Stock theme (One Dark), and I've only changed a few things. I really have not even thought of switching to another theme. This one just looks so dang good, it's dark like Sublime, and even Monokai's classic allure has not beaten me out for how much I respect the design of Atom.
 
 The minimap focuses more on blocks than the actual words, and it looks plain awesome. Tetris, anyone?
-![Tetris](/assets/images/a-few-weeks-with-atom/Screenshot-2015-08-04-00-42-39.png)
+<a href="/assets/images/a-few-weeks-with-atom/Screenshot-2015-08-04-00-42-39.png"
+   data-rjs="/assets/images/a-few-weeks-with-atom/Screenshot-2015-08-04-00-42-39.png"
+   class="fluidbox-trigger">
+  <img src="/assets/images/a-few-weeks-with-atom/Screenshot-2015-08-04-00-42-39.png" alt="Tetris" />
+</a>
 
 The package [file-icons](https://github.com/DanBrooker/file-icons) is quite awesome too: it shows a visual display of file types so it is easier to see what you are looking at in a project. It's an absolute must-have.
 
 Finally, the ability to customize your settings with a graphical user interface is a huge plus. With Sublime, you would have to look at defaults in a `.json` file and then manually add what you wanted in a User-Specific settings file. Atom has an entirely HTML-powered interface to visualize settings, and `cson` for when you want to customize further. Here's a look at the settings page:
-![](/assets/images/a-few-weeks-with-atom/Screenshot-2015-08-04-00-48-20.png)
+<a href="/assets/images/a-few-weeks-with-atom/Screenshot-2015-08-04-00-48-20.png"
+   data-rjs="/assets/images/a-few-weeks-with-atom/Screenshot-2015-08-04-00-48-20.png"
+   class="fluidbox-trigger">
+  <img src="/assets/images/a-few-weeks-with-atom/Screenshot-2015-08-04-00-48-20.png" />
+</a>
 
 ### Final Verdict
 

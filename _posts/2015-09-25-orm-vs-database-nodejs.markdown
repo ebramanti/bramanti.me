@@ -10,7 +10,11 @@ I've been working a lot with Node lately. Currently, I'm building an API using E
 
 As I dug into this issue, I've come to realize something as a Node developer: a lot of ORM/database issues are actually a side effect of using Javascript as a server-side language.
 
-![](/assets/images/orm-vs-database-nodejs/elephant-bookshelf.jpg)
+<a href="/assets/images/orm-vs-database-nodejs/elephant-bookshelf.jpg"
+   data-rjs="/assets/images/orm-vs-database-nodejs/elephant-bookshelf.jpg"
+   class="fluidbox-trigger">
+  <img src="/assets/images/orm-vs-database-nodejs/elephant-bookshelf.jpg" />
+</a>
 
 ### The Problem: Integers
 

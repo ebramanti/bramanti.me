@@ -8,7 +8,11 @@ tags:
 
 I recently got my feet wet with [Koa.js](http://koajs.com/), a next-generation web framework made by the creators of Express.
 
-![Koa logo](/assets/images/working-with-koa-js/koajs.png)
+<a href="/assets/images/working-with-koa-js/koajs.png"
+   data-rjs="/assets/images/working-with-koa-js/koajs.png"
+   class="fluidbox-trigger">
+  <img src="/assets/images/working-with-koa-js/koajs.png" alt="Koa logo" />
+</a>
 
 My project was to design a Koa server for [TechEmpower's Framework Benchmarks](https://github.com/TechEmpower/FrameworkBenchmarks/). I'm going to use this blog post to sound off on some of the things I like about Koa, and some of the things I don't like. The code for the server I contributed to TechEmpower's benchmark can be found [here](blob/master/frameworks/JavaScript/koa/app.js).
 
