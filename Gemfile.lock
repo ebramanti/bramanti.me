@@ -84,7 +84,7 @@ GEM
       gemoji (~> 2.0)
       html-pipeline (~> 2.2)
       jekyll (>= 3.0)
-    json (1.8.3)
+    json (1.8.6)
     kramdown (1.11.1)
     liquid (3.0.6)
     listen (3.0.6)
@@ -128,4 +128,4 @@ DEPENDENCIES
   kramdown (~> 1.11, >= 1.11.1)
 
 BUNDLED WITH
-   1.12.3
+   1.15.4
