@@ -6,7 +6,11 @@ date: '2016-04-26 21:56:56'
 
 I am very excited to announce that I will be joining [Videoamp](http://videoamp.com), an advertising technology startup, in May.
 
-![Videoamp Logo](/assets/images/joining-videoamp/videoamp.png){: .center-image }
+<a href="/assets/images/joining-videoamp/videoamp.png"
+   data-rjs="/assets/images/joining-videoamp/videoamp.png"
+   class="fluidbox-trigger">
+  <img class="center-image" src="/assets/images/joining-videoamp/videoamp.png" alt="Videoamp Logo" />
+</a>
 
 I will be working on their API team to enhance their existing Node.js API. It marks a culmination of the experience I have with Javascript and Node over the past couple of years.
 

@@ -1,6 +1,12 @@
-source 'https://rubygems.org'
+source "https://rubygems.org"
 
-gem 'github-pages', group: :jekyll_plugins
-gem 'kramdown', '~> 1.11', '>= 1.11.1'
-gem 'jekyll', '~> 3.1', '>= 3.1.6'
-gem 'jekyll-paginate', '~> 1.1'
+gem "autoprefixer-rails"
+gem "html-proofer"
+gem "jekyll"
+gem "jekyll-assets"
+gem "jekyll-paginate"
+gem "jekyll-sitemap"
+gem "jemoji"
+gem "mini_magick"
+gem "sass"
+gem "uglifier"
