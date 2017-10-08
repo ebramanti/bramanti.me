@@ -1,6 +1,10 @@
-<footer id="footer">
-    <p class="small">© Copyright {{ site.time | date: '%Y' }} {{ site.author }}</p>
-    {% if jekyll.environment == "production" %}
-        <a href="https://heapanalytics.com/?utm_source=badge"><img style="width:108px;height:41px" src="//heapanalytics.com/img/badgeLight.png" alt="Heap | Mobile and Web Analytics" /></a>
-    {% endif %}
+<footer class="footer {% if site.scrollappear_enabled %}appear{% endif %}">
+  <p>
+    Chalk is a high quality, completely customizable, performant and 100% free
+    blog template for Jekyll built by
+    <a href="{{ 'about' | relative_url }}" title="About me">Nielsen Ramon</a>. Download it <a href="https://github.com/nielsenramon/chalk" rel="noreferrer noopener" target="_blank" title="Download Chalk">here</a>.
+  </p>
+  {% if jekyll.environment == "production" %}
+      <a href="https://heapanalytics.com/?utm_source=badge"><img style="width:108px;height:41px" src="//heapanalytics.com/img/badgeLight.png" alt="Heap | Mobile and Web Analytics" /></a>
+  {% endif %}
 </footer>
