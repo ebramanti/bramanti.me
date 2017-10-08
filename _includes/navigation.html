@@ -3,64 +3,36 @@
   <ul class="header-links">
     {% if site.about_enabled == true %}
       <li>
-        <a href="{{ 'about' | relative_url }}" title="About me">
-          <span class="icon icon-about"></span>
+        <a href="{{ 'about' | relative_url }}">
+          About
         </a>
       </li>
     {% endif %}
-    {% if site.social.twitter %}
+    {% if site.social.resume %}
       <li>
-        <a href="https://twitter.com/{{ site.social.twitter }}" rel="noreferrer noopener" target="_blank" title="Twitter">
-          <span class="icon icon-twitter"></span>
-        </a>
-      </li>
-    {% endif %}
-    {% if site.social.facebook %}
-      <li>
-        <a href="https://www.facebook.com/{{ site.social.facebook }}" rel="noreferrer noopener" target="_blank" title="Facebook">
-          <span class="icon icon-facebook"></span>
+        <a href="{{ site.social.resume }}" rel="noreferrer noopener" target="_blank">
+          Resume
         </a>
       </li>
     {% endif %}
     {% if site.social.github %}
       <li>
-        <a href="https://github.com/{{ site.social.github }}" rel="noreferrer noopener" target="_blank" title="GitHub">
-          <span class="icon icon-github"></span>
-        </a>
-      </li>
-    {% endif %}
-    {% if site.social.dribbble %}
-      <li>
-        <a href="https://dribbble.com/{{ site.social.dribbble }}" rel="noreferrer noopener" target="_blank" title="Dribbble">
-          <span class="icon icon-dribbble"></span>
-        </a>
-      </li>
-    {% endif %}
-    {% if site.social.flickr %}
-      <li>
-        <a href="https://www.flickr.com/photos/{{ site.social.flickr }}" rel="noreferrer noopener" target="_blank" title="Flickr">
-          <span class="icon icon-flickr"></span>
+        <a href="https://github.com/{{ site.social.github }}" rel="noreferrer noopener" target="_blank">
+          Github
         </a>
       </li>
     {% endif %}
     {% if site.social.linkedin %}
       <li>
-        <a href="https://www.linkedin.com/in/{{ site.social.linkedin }}" rel="noreferrer noopener" target="_blank" title="LinkedIn">
-          <span class="icon icon-linkedin"></span>
-        </a>
-      </li>
-    {% endif %}
-    {% if site.social.bitcoin %}
-      <li>
-        <a href="{{ site.social.bitcoin }}" rel="noreferrer noopener" target="_blank" title="Bitcoin">
-          <span class="icon icon-bitcoin"></span>
+        <a href="https://www.linkedin.com/in/{{ site.social.linkedin }}" rel="noreferrer noopener" target="_blank">
+          LinkedIn
         </a>
       </li>
     {% endif %}
     {% if site.social.email %}
       <li>
-        <a href="mailto:{{ site.social.email }}" title="Email">
-          <span class="icon icon-email"></span>
+        <a href="mailto:{{ site.social.email }}">
+          Email
         </a>
       </li>
     {% endif %}
@@ -71,10 +43,5 @@
         </a>
       </li>
     {% endif %}
-    <li>
-      <a href="https://represent.io/ebramanti" rel="noreferrer noopener" target="_blank" title="Resume">
-        <span class="icon icon-file-text"></span>
-      </a>
-    </li>
   </ul>
 </nav>

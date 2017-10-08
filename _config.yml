@@ -15,14 +15,10 @@ local_fonts: false # Change to true if you wish to use local fonts
 rss_enabled: true # Change to false if not
 scrollappear_enabled: true # Change to false to disable
 social:
-  dribbble: # Add your Dribbble handle
-  facebook: # Add your Facebook handle
-  flickr: # Add your Flickr handle
+  resume: https://represent.io/ebramanti
   github: jadengore # Add your GitHub handle
   linkedin: edwardbramanti # Add your LinkedIn handle
-  twitter: jadengore # Add your Twitter handle
   email: edward@bramanti.org # Add your Email address
-  bitcoin: # Add your Bitcoin link or address
 
 # Important settings (change at own risk)
 

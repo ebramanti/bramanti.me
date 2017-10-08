@@ -24,13 +24,13 @@
   list-style: none;
   li {
     display: inline-block;
-    margin-left: 20px;
+    margin-left: 10px;
     vertical-align: middle;
     &:first-child {
       margin-left: 0;
     }
     a {
-      font-size: 18px;
+      font-size: 15px;
       color: $header-link-color;
       &:hover {
         color: $header-link-color-hover;
