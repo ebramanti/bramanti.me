@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Bookshelf.js is dead"
-date: 2017-10-08
+date: 2017-12-28
 tags:
 - javascript
 ---
@@ -14,7 +14,7 @@ I was a huge fan of Bookshelf for a few reasons:
 1. It was built on the [Knex](http://knexjs.org/) query builder. Knex is very feature-complete and has great maintainer support & documentation (it was also made by the creator of Bookshelf). Bookshelf makes it reasonable to write custom queries using the Knex API.
 2. Bookshelf doesn't force you to [create a Mongo-like schema](http://docs.sequelizejs.com/manual/tutorial/models-definition.html). Instead, it delegates your types to your database and migrations directly. This avoids you from having to update your schemas in two places.
 3. The API is focused on the common operations for your database models.
-4. It had decent documentation for most of its methods.
+4. It has decent documentation for most of its methods.
 
 Sounds OK, right? Let's talk about some serious issues with Bookshelf that will most likely never be fixed:
 1. The Relations API is poorly documented and hard to understand. [Method naming is very easy to mix up](http://bookshelfjs.org/index.html#associations), and when your data model gets more complicated it gets harder to manage this in your models. Most of my time I have spent answering my coworkers' questions about Bookshelf revolve around this issue. [Here's proof it is not isolated to my team](https://github.com/bookshelf/bookshelf/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aopen+relation).
@@ -36,7 +36,7 @@ I've been following a lot of different ORM projects in JavaScript ([including on
 There are a few things about this library that really won me over:
 1. It's still built on top of [Knex](http://knexjs.org/), just like Bookshelf.
 2. No more `Collection` API. Objection uses raw JavaScript arrays, and only has an API around [Models](http://vincit.github.io/objection.js/#model270). This is the correct approach to building an ORM API. Most database operations happen at a model-level, and batch operations are still accepted through the [insert method](http://vincit.github.io/objection.js/#insert).
-3. [A fantastic Relation API](http://vincit.github.io/objection.js/#relations). Objection has designed an excellent DSL around designing your model relations. While I'm not a huge fan of the "stringified arrays", I understand the decision-making process behind this. This API is truly in a class of its own for JavaScript ORMs.
+3. [A fantastic Relation API](http://vincit.github.io/objection.js/#relations). Objection has designed an excellent DSL around designing your model relations. While I'm not a huge fan of the "stringified arrays", I am willing to forgive this since the API is truly in a class of its own.
 4. [Excellent, up-to-date documentation](http://vincit.github.io/objection.js/). This is the kind of documentation I expect from a top-tier library. Examples are all ES6 or newer, with a very in-depth API reference and lots of examples (including Typescript ones!). The Vincit team has done an amazing job here, and I strive to write documentation this complete in the libraries I build in the future.
 
 The features above are the stand-outs, but this only scratches the surface. [Graph upserts](http://vincit.github.io/objection.js/#graph-upserts), [simple eager loading](http://vincit.github.io/objection.js/#eager-loading), [paging](http://vincit.github.io/objection.js/#paging), and the list goes on and on. I've also had a chance to meet some of the team behind this library, and they are very smart developers who are excited about evangelizing their library. Vincit is clearly committed to supporting Objection's development, which means active maintainers who are putting time into addressing issues.
