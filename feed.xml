@@ -1,20 +1,90 @@
----
----
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="https://www.w3.org/2005/Atom" xmlns:dc="https://purl.org/dc/elements/1.1/">
   <channel>
-    <title>{{ site.name | xml_escape }}</title>
-    <description>{% if site.description %}{{ site.description | xml_escape }}{% endif %}</description>
-    <link>{{ site.url }}</link>
-    <atom:link href="{{ page.path | absolute_url }}" rel="self" type="application/rss+xml" />
-    {% for post in site.posts limit:10 %}
+    <title>Edward Bramanti</title>
+    <description></description>
+    <link>https://bramanti.me</link>
+    <atom:link href="https://bramanti.me/feed.xml" rel="self" type="application/rss+xml" />
+    
       <item>
-        <title>{{ post.title | xml_escape }}</title>
-        <description>{{ post.description | xml_escape }}</description>
-        <pubDate>{{ post.date | date_to_rfc822 }}</pubDate>
-        <link>{{ post.url | absolute_url }}</link>
-        <guid isPermaLink="true">{{ post.url | absolute_url }}</guid>
+        <title>Last Day at VideoAmp</title>
+        <description></description>
+        <pubDate>Mon, 09 Apr 2018 00:00:00 -0700</pubDate>
+        <link>https://bramanti.me/last-day-at-videoamp/</link>
+        <guid isPermaLink="true">https://bramanti.me/last-day-at-videoamp/</guid>
       </item>
-    {% endfor %}
+    
+      <item>
+        <title>Bookshelf.js is dead</title>
+        <description></description>
+        <pubDate>Thu, 28 Dec 2017 00:00:00 -0800</pubDate>
+        <link>https://bramanti.me/bookshelf-is-dead/</link>
+        <guid isPermaLink="true">https://bramanti.me/bookshelf-is-dead/</guid>
+      </item>
+    
+      <item>
+        <title>Error handling with ES7's async/await</title>
+        <description></description>
+        <pubDate>Sun, 08 Oct 2017 00:00:00 -0700</pubDate>
+        <link>https://bramanti.me/error-handling-javascript-es7-async-await/</link>
+        <guid isPermaLink="true">https://bramanti.me/error-handling-javascript-es7-async-await/</guid>
+      </item>
+    
+      <item>
+        <title>Set up an ESLint config for your organization</title>
+        <description></description>
+        <pubDate>Wed, 12 Oct 2016 00:00:00 -0700</pubDate>
+        <link>https://bramanti.me/organization-eslint-config/</link>
+        <guid isPermaLink="true">https://bramanti.me/organization-eslint-config/</guid>
+      </item>
+    
+      <item>
+        <title>Switching to Jekyll</title>
+        <description></description>
+        <pubDate>Mon, 04 Jul 2016 00:00:00 -0700</pubDate>
+        <link>https://bramanti.me/switching-to-jekyll/</link>
+        <guid isPermaLink="true">https://bramanti.me/switching-to-jekyll/</guid>
+      </item>
+    
+      <item>
+        <title>I'm Joining VideoAmp</title>
+        <description></description>
+        <pubDate>Tue, 26 Apr 2016 21:56:56 -0700</pubDate>
+        <link>https://bramanti.me/joining-videoamp/</link>
+        <guid isPermaLink="true">https://bramanti.me/joining-videoamp/</guid>
+      </item>
+    
+      <item>
+        <title>Are you serial, Promise.all?</title>
+        <description></description>
+        <pubDate>Fri, 04 Mar 2016 19:13:51 -0800</pubDate>
+        <link>https://bramanti.me/are-you-serial-promise-all/</link>
+        <guid isPermaLink="true">https://bramanti.me/are-you-serial-promise-all/</guid>
+      </item>
+    
+      <item>
+        <title>A Day in the Life - Resources</title>
+        <description></description>
+        <pubDate>Tue, 08 Dec 2015 17:53:58 -0800</pubDate>
+        <link>https://bramanti.me/day-in-the-life/</link>
+        <guid isPermaLink="true">https://bramanti.me/day-in-the-life/</guid>
+      </item>
+    
+      <item>
+        <title>I'm Leaving Facebook</title>
+        <description></description>
+        <pubDate>Wed, 18 Nov 2015 06:45:24 -0800</pubDate>
+        <link>https://bramanti.me/im-leaving-facebook/</link>
+        <guid isPermaLink="true">https://bramanti.me/im-leaving-facebook/</guid>
+      </item>
+    
+      <item>
+        <title>ORM vs. Database in Node.js</title>
+        <description></description>
+        <pubDate>Fri, 25 Sep 2015 19:24:22 -0700</pubDate>
+        <link>https://bramanti.me/orm-vs-database-nodejs/</link>
+        <guid isPermaLink="true">https://bramanti.me/orm-vs-database-nodejs/</guid>
+      </item>
+    
   </channel>
 </rss>

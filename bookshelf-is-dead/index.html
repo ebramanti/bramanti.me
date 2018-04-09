@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>
+    Edward Bramanti
+    
+      | Bookshelf.js is dead
+    
+  </title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:title" content="Bookshelf.js is dead">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://bramanti.me/bookshelf-is-dead/">
+  <meta property="og:description" content="">
+  <meta property="og:site_name" content="Edward Bramanti">
+  <meta property="og:image" content="">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:url" content="https://bramanti.me/bookshelf-is-dead/">
+  <meta name="twitter:title" content="Bookshelf.js is dead">
+  <meta name="twitter:description" content="">
+  <meta name="twitter:image" content="">
+
+  <link href="https://bramanti.me/feed.xml" type="application/rss+xml" rel="alternate" title="Edward Bramanti Last 10 blog posts">
+
+  
+
+  
+    <link rel="stylesheet" href="/assets/dark.css">
+
+  
+</head>
+
+<body>
+  <main>
+    <div class="grid grid-centered">
+      <div class="grid-cell">
+        <nav class="header-nav appear">
+  <a href="/" class="header-logo" title="Edward Bramanti">Edward Bramanti</a>
+  <ul class="header-links">
+    
+      <li>
+        <a href="/about">
+          About
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="https://represent.io/ebramanti" rel="noreferrer noopener" target="_blank">
+          Resume
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="https://github.com/jadengore" rel="noreferrer noopener" target="_blank">
+          Github
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="https://www.linkedin.com/in/edwardbramanti" rel="noreferrer noopener" target="_blank">
+          LinkedIn
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="mailto:edward@bramanti.org">
+          Email
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="/feed.xml" rel="noreferrer noopener" target="_blank" title="RSS">
+          <span class="icon icon-rss"></span>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+        <article class="article appear">
+          <header class="article-header">
+            <h1>Bookshelf.js is dead</h1>
+            <p></p>
+            <div class="article-list-footer">
+              <span class="article-list-date">
+                December 28, 2017
+              </span>
+              <span class="article-list-divider">-</span>
+              <span class="article-list-minutes">
+                
+                
+                  4 minute read
+                
+              </span>
+              
+                <span class="article-list-divider">-</span>
+                <div class="article-list-tags">
+                  
+                    <a href="/tag/javascript">javascript</a>
+                  
+                </div>
+              
+            </div>
+          </header>
+
+          <div class="article-content">
+            <p>For the past three years, I’ve been a huge advocate of <a href="http://bookshelfjs.org/">Bookshelf.js</a> to my friends and the companies I have worked at. I’ve built small libraries that depend on it, and I’ve read most of the source code and understand the internals. I have actively followed open issues and tried to help developers with their problems whenever I had time outside of work.</p>
+
+<p>However, over the past few months I have distanced myself from the project. I dropped my maintainer status (my contributions were just documentation work and code review, no actual features) and left the Bookshelf organization.</p>
+
+<h1 id="so-what">So what?</h1>
+<p>I was a huge fan of Bookshelf for a few reasons:</p>
+<ol>
+  <li>It was built on the <a href="http://knexjs.org/">Knex</a> query builder. Knex is very feature-complete and has great maintainer support &amp; documentation (it was also made by the creator of Bookshelf). Bookshelf makes it reasonable to write custom queries using the Knex API.</li>
+  <li>Bookshelf doesn’t force you to <a href="http://docs.sequelizejs.com/manual/tutorial/models-definition.html">create a Mongo-like schema</a>. Instead, it delegates your types to your database and migrations directly. This avoids you from having to update your schemas in two places.</li>
+  <li>The API is focused on the common operations for your database models.</li>
+  <li>It has decent documentation for most of its methods.</li>
+</ol>
+
+<p>Sounds OK, right? Let’s talk about some serious issues with Bookshelf that will most likely never be fixed:</p>
+<ol>
+  <li>The Relations API is poorly documented and hard to understand. <a href="http://bookshelfjs.org/index.html#associations">Method naming is very easy to mix up</a>, and when your data model gets more complicated it gets harder to manage this in your models. Most of my time I have spent answering my coworkers’ questions about Bookshelf revolve around this issue. <a href="https://github.com/bookshelf/bookshelf/issues?utf8=%E2%9C%93&amp;q=is%3Aissue+is%3Aopen+relation">Here’s proof it is not isolated to my team</a>.</li>
+  <li>Extending Backbone brought along the <a href="http://bookshelfjs.org/#section-Collection">Collections API</a>, which is confusing and unnecessary. Instead of using arrays of models, Bookshelf uses a Backbone-like <code class="highlighter-rouge">Collection</code> class to store a list of <code class="highlighter-rouge">Model</code>s. This leads to the addition of <a href="http://bookshelfjs.org/#Collection-instance-at">unnecessary accessor methods</a> and a <a href="http://bookshelfjs.org/#Collection-subsection-lodash-methods">weird API with Lodash methods</a>.</li>
+  <li>Really poor examples exacerbate the issues above. The docs give very basic examples of the <code class="highlighter-rouge">Model</code> and <code class="highlighter-rouge">Collection</code> methods, which means you have to go digging through source code to find what you need.</li>
+</ol>
+
+<h1 id="what-prompted-me-to-leave">What prompted me to leave?</h1>
+<p><a href="https://github.com/bookshelf/bookshelf/issues/1600">This issue</a> was the straw that broke my back.</p>
+
+<p>In June 2017, <a href="https://github.com/tgriesser/">Tim Griesser</a> moved the Bookshelf project from his personal account to an organization and handed admin rights over to a small group of (mostly) non-active maintainers. A few of the maintainers I have worked with have backed away from the project due to other responsibilities, and the newer maintainers have not roadmapped possible features. From the issue above, there are a lot of <img class="emoji" title=":raised_hand:" alt=":raised_hand:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/270b.png" height="20" width="20">s but no lead maintainer who can review PRs and maintain the project.</p>
+
+<p>In addition, issues that are well-documented have been ignored for a long time. Take <a href="https://github.com/bookshelf/bookshelf/issues/803">this issue from a maintainer I’ve worked with</a>. This issue has been open for almost three years. These problems with Bookshelf’s API have been unaddressed, and this was when Bookshelf was much more actively maintained. With even less maintainers and no lead, it is doubtful that these issues will ever be addressed.</p>
+
+<p>On top of this, <a href="https://github.com/bookshelf/bookshelf/releases">all releases</a> in the past year were small bug fixes. No major features were shipped, and no issues in the API were addressed.</p>
+
+<h1 id="ok-so-bookshelf-is-dead-what-replaces-it">OK, so Bookshelf is dead. What replaces it?</h1>
+<p>I’ve been following a lot of different ORM projects in JavaScript (<a href="https://github.com/rhys-vdw/atlas">including ones from former maintainers</a>), and the best ORM I have come across so far is <a href="https://www.vincit.fi/en/">Vincit’s</a> <a href="http://vincit.github.io/objection.js/">objection.js</a>.</p>
+
+<p>There are a few things about this library that really won me over:</p>
+<ol>
+  <li>It’s still built on top of <a href="http://knexjs.org/">Knex</a>, just like Bookshelf.</li>
+  <li>No more <code class="highlighter-rouge">Collection</code> API. Objection uses raw JavaScript arrays, and only has an API around <a href="http://vincit.github.io/objection.js/#model270">Models</a>. This is the correct approach to building an ORM API. Most database operations happen at a model-level, and batch operations are still accepted through the <a href="http://vincit.github.io/objection.js/#insert">insert method</a>.</li>
+  <li>
+<a href="http://vincit.github.io/objection.js/#relations">A fantastic Relation API</a>. Objection has designed an excellent DSL around designing your model relations. While I’m not a huge fan of the “stringified arrays”, I am willing to forgive this since the API is truly in a class of its own.</li>
+  <li>
+<a href="http://vincit.github.io/objection.js/">Excellent, up-to-date documentation</a>. This is the kind of documentation I expect from a top-tier library. Examples are all ES6 or newer, with a very in-depth API reference and lots of examples (including Typescript ones!). The Vincit team has done an amazing job here, and I strive to write documentation this complete in the libraries I build in the future.</li>
+</ol>
+
+<p>The features above are the stand-outs, but this only scratches the surface. <a href="http://vincit.github.io/objection.js/#graph-upserts">Graph upserts</a>, <a href="http://vincit.github.io/objection.js/#eager-loading">simple eager loading</a>, <a href="http://vincit.github.io/objection.js/#paging">paging</a>, and the list goes on and on. I’ve also had a chance to meet some of the team behind this library, and they are very smart developers who are excited about evangelizing their library. Vincit is clearly committed to supporting Objection’s development, which means active maintainers who are putting time into addressing issues.</p>
+
+<p>So, for future projects, I will be using Objection.js. I highly recommend developers who are looking for a rock-solid ORM to <a href="http://vincit.github.io/objection.js">check out the docs</a> and be sold for yourself on the documentation and simple API.</p>
+
+          </div>
+
+          <div class="article-share">
+            
+            
+            <a href="https://twitter.com/home?status=Bookshelf.js+is+dead%20-%20https://bramanti.me/bookshelf-is-dead/" title="Share on Twitter" rel="noreferrer noopener" target="_blank">
+              <svg viewbox="0 0 512 512"><path d="M492 109.5c-17.4 7.7-36 12.9-55.6 15.3 20-12 35.4-31 42.6-53.6 -18.7 11.1-39.4 19.2-61.5 23.5C399.8 75.8 374.6 64 346.8 64c-53.5 0-96.8 43.4-96.8 96.9 0 7.6 0.8 15 2.5 22.1 -80.5-4-151.9-42.6-199.6-101.3 -8.3 14.3-13.1 31-13.1 48.7 0 33.6 17.2 63.3 43.2 80.7C67 210.7 52 206.3 39 199c0 0.4 0 0.8 0 1.2 0 47 33.4 86.1 77.7 95 -8.1 2.2-16.7 3.4-25.5 3.4 -6.2 0-12.3-0.6-18.2-1.8 12.3 38.5 48.1 66.5 90.5 67.3 -33.1 26-74.9 41.5-120.3 41.5 -7.8 0-15.5-0.5-23.1-1.4C62.8 432 113.7 448 168.3 448 346.6 448 444 300.3 444 172.2c0-4.2-0.1-8.4-0.3-12.5C462.6 146 479 129 492 109.5z"></path></svg>
+            </a>
+            <a href="https://www.facebook.com/sharer/sharer.php?u=https://bramanti.me/bookshelf-is-dead/" title="Share on Facebook" rel="noreferrer noopener" target="_blank">
+              <svg viewbox="0 0 512 512"><path d="M288 192v-38.1c0-17.2 3.8-25.9 30.5-25.9H352V64h-55.9c-68.5 0-91.1 31.4-91.1 85.3V192h-45v64h45v192h83V256h56.4l7.6-64H288z"></path></svg>
+            </a>
+            <a href="https://plus.google.com/share?url=https://bramanti.me/bookshelf-is-dead/" title="Share on Google+" rel="noreferrer noopener" target="_blank">
+              <svg viewbox="0 0 128 128"><path d="M40.7 55.9v16.1c0 0 15.6 0 22 0C59.2 82.5 53.8 88.2 40.7 88.2c-13.3 0-23.7-10.8-23.7-24.2s10.4-24.2 23.7-24.2c7.1 0 11.6 2.5 15.8 5.9 3.3-3.3 3.1-3.8 11.6-11.9 -7.2-6.6-16.8-10.6-27.4-10.6C18.2 23.3 0 41.5 0 64c0 22.5 18.2 40.7 40.7 40.7 33.6 0 41.8-29.3 39-48.8H40.7zM113.9 56.7V42.6h-10.1v14.1H89.4v10.1h14.5v14.5h10.1V66.8H128V56.7H113.9z"></path></svg>
+            </a>
+          </div>
+
+          
+            <div id="disqus_thread" class="article-comments"></div>
+            <script src="https://bramanti.disqus.com/embed.js" async defer></script>
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+          
+        </article>
+        <footer class="footer appear">
+  <p>
+    Chalk is a high quality, completely customizable, performant and 100% free
+    blog template for Jekyll built by Nielsen Ramon.
+    Download it <a href="https://github.com/nielsenramon/chalk" rel="noreferrer noopener" target="_blank" title="Download Chalk">here</a>.
+  </p>
+  
+</footer>
+
+      </div>
+    </div>
+  </main>
+  
+
+
+<script type="text/javascript">
+  window.heap=window.heap||[],heap.load=function(e,t){window.heap.appid=e,window.heap.config=t=t||{};var r=t.forceSSL||"https:"===document.location.protocol,a=document.createElement("script");a.type="text/javascript",a.async=!0,a.src=(r?"https:":"http:")+"//cdn.heapanalytics.com/js/heap-"+e+".js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(a,n);for(var o=function(e){return function(){heap.push([e].concat(Array.prototype.slice.call(arguments,0)))}},p=["addEventProperties","addUserProperties","clearEventProperties","identify","removeEventProperty","setEventProperties","track","unsetEventProperty"],c=0;c<p.length;c++)heap[p[c]]=o(p[c])};
+  heap.load("7009234");
+</script>
+
+
+<script src="/assets/vendor.js"></script>
+
+
+
+  <script src="/assets/webfonts.js"></script>
+
+
+
+
+  <script src="/assets/scrollappear.js"></script>
+
+
+
+<script src="/assets/application.js"></script>
+
+
+</body>
+</html>

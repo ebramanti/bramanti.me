@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>
+    Edward Bramanti
+    
+      | Error handling with ES7's async/await
+    
+  </title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:title" content="Error handling with ES7&#39;s async/await">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://bramanti.me/error-handling-javascript-es7-async-await/">
+  <meta property="og:description" content="">
+  <meta property="og:site_name" content="Edward Bramanti">
+  <meta property="og:image" content="">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:url" content="https://bramanti.me/error-handling-javascript-es7-async-await/">
+  <meta name="twitter:title" content="Error handling with ES7&#39;s async/await">
+  <meta name="twitter:description" content="">
+  <meta name="twitter:image" content="">
+
+  <link href="https://bramanti.me/feed.xml" type="application/rss+xml" rel="alternate" title="Edward Bramanti Last 10 blog posts" />
+
+  
+
+  
+    <link rel="stylesheet" href="/assets/dark.css">
+
+  
+</head>
+
+<body>
+  <main>
+    <div class="grid grid-centered">
+      <div class="grid-cell">
+        <nav class="header-nav appear">
+  <a href="/" class="header-logo" title="Edward Bramanti">Edward Bramanti</a>
+  <ul class="header-links">
+    
+      <li>
+        <a href="/about">
+          About
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="https://represent.io/ebramanti" rel="noreferrer noopener" target="_blank">
+          Resume
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="https://github.com/jadengore" rel="noreferrer noopener" target="_blank">
+          Github
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="https://www.linkedin.com/in/edwardbramanti" rel="noreferrer noopener" target="_blank">
+          LinkedIn
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="mailto:edward@bramanti.org">
+          Email
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="/feed.xml" rel="noreferrer noopener" target="_blank" title="RSS">
+          <span class="icon icon-rss"></span>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+        <article class="article appear">
+          <header class="article-header">
+            <h1>Error handling with ES7's async/await</h1>
+            <p></p>
+            <div class="article-list-footer">
+              <span class="article-list-date">
+                October 8, 2017
+              </span>
+              <span class="article-list-divider">-</span>
+              <span class="article-list-minutes">
+                
+                
+                  5 minute read
+                
+              </span>
+              
+                <span class="article-list-divider">-</span>
+                <div class="article-list-tags">
+                  
+                    <a href="/tag/javascript">javascript</a>
+                  
+                </div>
+              
+            </div>
+          </header>
+
+          <div class="article-content">
+            <p>One of my co-workers jokingly responded after I said I would <em>never</em> use ES7’s async/await over Bluebird’s <a href="http://bluebirdjs.com/docs/api/promise.coroutine.html"><code class="highlighter-rouge">Promise.coroutine</code></a> with this:</p>
+
+<blockquote>
+  <p>Year 2040, Man refuses to acknowledge async/await and insists on using coroutines</p>
+</blockquote>
+
+<p>It’s no secret that I have been stubborn to adopt some new features that have come to JavaScript in ES6/ES7. For example, I do not think the addition of ES6 classes was a good decision. It has removed a need for people to deeply understand prototypal inheritance in JavaScript, and further encourages inheritance over composition. However, I have had a valid reason for holding off on using ES7’s async/await (until now).</p>
+
+<h1 id="what-is-an-async-function">What is an async function?</h1>
+<p>Async/await introduces a solution to a problem previously solved by coroutines. It provides a language-level construct for synchronously executing asynchronous actions, making your JavaScript code’s control flow significantly easier to follow.</p>
+
+<p>Below is an example of an async function:</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">const</span> <span class="nx">waitToSayHello</span> <span class="o">=</span> <span class="k">async</span><span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kr">await</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">delay</span><span class="p">(</span><span class="mi">2000</span><span class="p">);</span> <span class="c1">// Bluebird utility function</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"Hello!"</span><span class="p">);</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>The code above is extremely clear: wait for 2 seconds and log. Async/await eliminates the need for timeout callbacks by allowing to specify waiting on asynchronous actions.</p>
+
+<h1 id="why-have-i-not-been-using-async-functions">Why have I not been using async functions?</h1>
+<p>Async functions become more complicated when you have to handle rejected promises. Take the code below, which fetches a Bookshelf User model by email, adds a token on to it, and returns a response from a server:</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">const</span> <span class="nx">fetchUserByEmail</span> <span class="o">=</span> <span class="k">async</span><span class="p">(</span><span class="nx">email</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">User</span><span class="p">.</span><span class="nx">forge</span><span class="p">({</span> <span class="nx">email</span> <span class="p">}).</span><span class="nx">fetch</span><span class="p">();</span>
+    <span class="nx">user</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="s2">"token"</span><span class="p">,</span> <span class="nx">getToken</span><span class="p">(</span><span class="nx">user</span><span class="p">));</span>
+    <span class="k">return</span> <span class="nx">User</span><span class="p">.</span><span class="nx">save</span><span class="p">();</span>
+<span class="p">};</span>
+
+<span class="nx">fetchUserByEmail</span><span class="p">(</span><span class="s2">"edward@bramanti.me"</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">user</span> <span class="o">=&gt;</span> <span class="nx">reply</span><span class="p">(</span><span class="nx">user</span><span class="p">));</span></code></pre></figure>
+
+<p>Let’s say if <code class="highlighter-rouge">edward@bramanti.me</code> is not found in the database when the user is fetched, the fetch promise rejects with an error called <code class="highlighter-rouge">UserNotFoundError</code>. We want to respond with a 404 for that particular error type and allow all other errors to throw and be caught by our server. There are two ways to handle an error with an async function:</p>
+<ol>
+  <li>A try/catch block inside the async function.</li>
+  <li>A catch block where the async function is called.</li>
+</ol>
+
+<p>There are <a href="https://blog.patricktriest.com/what-is-async-await-why-should-you-care/">plenty of examples online</a> about the first option, but in this particular case, I want to focus on #2. Here is what our implementation could look like:</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">const</span> <span class="nx">fetchUserByEmail</span> <span class="o">=</span> <span class="k">async</span><span class="p">(</span><span class="nx">email</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">User</span><span class="p">.</span><span class="nx">forge</span><span class="p">({</span> <span class="nx">email</span> <span class="p">}).</span><span class="nx">fetch</span><span class="p">();</span>
+    <span class="nx">user</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="s2">"token"</span><span class="p">,</span> <span class="nx">getToken</span><span class="p">(</span><span class="nx">user</span><span class="p">));</span>
+    <span class="k">return</span> <span class="nx">User</span><span class="p">.</span><span class="nx">save</span><span class="p">();</span>
+<span class="p">};</span>
+
+<span class="nx">fetchUserByEmail</span><span class="p">(</span><span class="s2">"edward@bramanti.me"</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">user</span> <span class="o">=&gt;</span> <span class="nx">reply</span><span class="p">(</span><span class="nx">user</span><span class="p">))</span>
+    <span class="p">.</span><span class="k">catch</span><span class="p">((</span><span class="nx">e</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">e</span> <span class="k">instanceof</span> <span class="nx">UserNotFoundError</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">reply</span><span class="p">().</span><span class="nx">code</span><span class="p">(</span><span class="mi">404</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="k">throw</span> <span class="nx">e</span><span class="p">;</span>
+    <span class="p">})</span></code></pre></figure>
+
+<p>The problem here is that the <code class="highlighter-rouge">catch</code> block passes all error conditions to one function callback. If there is more than one error type, you need multiple conditional <code class="highlighter-rouge">instanceof</code> checks, which makes your callback longer and more complex. This may not seem like an issue, since we do handle the <code class="highlighter-rouge">UserNotFoundError</code>. Nevertheless, we have to re-throw if the error does not match conditional <code class="highlighter-rouge">instanceof</code> check. If you forget to re-throw, this could cause your server to hang in that block because it has not escaped asynchronous execution.</p>
+
+<p>Bluebird (and in particular, <code class="highlighter-rouge">Promise.coroutine</code>) diverges from async functions because it supports a feature called <a href="http://bluebirdjs.com/docs/api/catch.html#filtered-catch">filtered catch</a>. This feature allows you to specify one or more error constructors to be handled by a specific callback. This is available in many other languages, such as C# and Java, and is incredibly useful for handling different exception types.</p>
+
+<p>Using <code class="highlighter-rouge">Promise.coroutine</code> we can make use of this feature in a similar manner to async functions:</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">const</span> <span class="nx">fetchUserByEmail</span> <span class="o">=</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">coroutine</span><span class="p">(</span><span class="kd">function</span><span class="o">*</span><span class="p">(</span><span class="nx">email</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="k">yield</span> <span class="nx">User</span><span class="p">.</span><span class="nx">forge</span><span class="p">({</span> <span class="nx">email</span> <span class="p">}).</span><span class="nx">fetch</span><span class="p">();</span>
+    <span class="nx">user</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="s2">"token"</span><span class="p">,</span> <span class="nx">getToken</span><span class="p">(</span><span class="nx">user</span><span class="p">));</span>
+    <span class="k">return</span> <span class="nx">User</span><span class="p">.</span><span class="nx">save</span><span class="p">();</span>
+<span class="p">};</span>
+
+<span class="nx">fetchUserByEmail</span><span class="p">(</span><span class="s2">"edward@bramanti.me"</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">user</span> <span class="o">=&gt;</span> <span class="nx">reply</span><span class="p">(</span><span class="nx">user</span><span class="p">))</span>
+    <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="nx">UserNotFoundError</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">reply</span><span class="p">.</span><span class="nx">code</span><span class="p">(</span><span class="mi">404</span><span class="p">));</span></code></pre></figure>
+
+<p>Filtered catching <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/catch">is not supported by the ES6’s native Promise implementation</a>, which is why I have avoided using async/await and have stuck to using <code class="highlighter-rouge">Promise.coroutine</code>. The problem is clear: async/await returns a promise that does not support the useful, granular filtered catch that I need to cleanly handle the multiple different types of errors I could experience inside these functions.</p>
+
+<h1 id="my-solution-to-error-handling-hell">My solution to “error handling hell”</h1>
+<p>To get filtered catch support, I need async functions to return a Bluebird promise. Bluebird has a utility function called <a href="http://bluebirdjs.com/docs/api/promise.method.html"><code class="highlighter-rouge">Promise.method</code></a>, which we can wrap our async function with to return a Bluebird promise with filtered catch support:</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">const</span> <span class="nx">fetchUserByEmail</span> <span class="o">=</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">method</span><span class="p">(</span><span class="k">async</span><span class="p">(</span><span class="nx">email</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">User</span><span class="p">.</span><span class="nx">forge</span><span class="p">({</span> <span class="nx">email</span> <span class="p">}).</span><span class="nx">fetch</span><span class="p">();</span>
+    <span class="nx">user</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="s2">"token"</span><span class="p">,</span> <span class="nx">getToken</span><span class="p">(</span><span class="nx">user</span><span class="p">));</span>
+    <span class="k">return</span> <span class="nx">User</span><span class="p">.</span><span class="nx">save</span><span class="p">();</span>
+<span class="p">});</span></code></pre></figure>
+
+<p>Now, our called promise error handling looks exactly like it did with <code class="highlighter-rouge">Promise.coroutine</code>:</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">fetchUserByEmail</span><span class="p">(</span><span class="s2">"edward@bramanti.me"</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">user</span> <span class="o">=&gt;</span> <span class="nx">reply</span><span class="p">(</span><span class="nx">user</span><span class="p">))</span>
+    <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="nx">UserNotFoundError</span><span class="p">,</span> <span class="nx">reply</span><span class="p">().</span><span class="nx">code</span><span class="p">(</span><span class="mi">404</span><span class="p">));</span></code></pre></figure>
+
+<p>This is much cleaner, and now gives async/await functions all the power of Bluebird’s <code class="highlighter-rouge">catch</code>.</p>
+
+<h1 id="why-is-this-a-big-deal">Why is this a big deal?</h1>
+<p>Particularly with Node, I find myself performing multiple asynchronous actions that return different error types. Filtered catch allows you to clearly express your exception handling with discrete catch blocks, which has an added benefit of making your error handling code more readable. It is the reason why I still use Bluebird over native ES6 promises, and I will most likely continue to do so until it becomes a feature in native promises.</p>
+
+<h1 id="further-examplesreading">Further Examples/Reading</h1>
+<p>I made an example with a custom error type <a href="http://jsfiddle.net/arvyf8r3/">here on JSFiddle</a>, go check it out!</p>
+
+<p>Another way to solve error handling in async function is to use <a href="https://github.com/scopsy/await-to-js">Dima Grossman’s await-to-js</a> package. Instead of using Bluebird promises, he uses a wrapper to return errors like the Go programming language. The wrapper returns a 2-element array with the first element being an error/null and the second element being the resolved value. The syntax becomes much cleaner with ES6 using destructuring statements, and is an interesting take on the issue. You can read more in his announcement/blog post <a href="http://blog.grossman.io/how-to-write-async-await-without-try-catch-blocks-in-javascript/">here</a>.</p>
+
+<p>Thanks for reading!</p>
+
+          </div>
+
+          <div class="article-share">
+            
+            
+            <a href="https://twitter.com/home?status=Error+handling+with+ES7%27s+async%2Fawait - https://bramanti.me/error-handling-javascript-es7-async-await/" title="Share on Twitter" rel="noreferrer noopener" target="_blank">
+              <svg viewBox="0 0 512 512"><path d="M492 109.5c-17.4 7.7-36 12.9-55.6 15.3 20-12 35.4-31 42.6-53.6 -18.7 11.1-39.4 19.2-61.5 23.5C399.8 75.8 374.6 64 346.8 64c-53.5 0-96.8 43.4-96.8 96.9 0 7.6 0.8 15 2.5 22.1 -80.5-4-151.9-42.6-199.6-101.3 -8.3 14.3-13.1 31-13.1 48.7 0 33.6 17.2 63.3 43.2 80.7C67 210.7 52 206.3 39 199c0 0.4 0 0.8 0 1.2 0 47 33.4 86.1 77.7 95 -8.1 2.2-16.7 3.4-25.5 3.4 -6.2 0-12.3-0.6-18.2-1.8 12.3 38.5 48.1 66.5 90.5 67.3 -33.1 26-74.9 41.5-120.3 41.5 -7.8 0-15.5-0.5-23.1-1.4C62.8 432 113.7 448 168.3 448 346.6 448 444 300.3 444 172.2c0-4.2-0.1-8.4-0.3-12.5C462.6 146 479 129 492 109.5z"/></svg>
+            </a>
+            <a href="https://www.facebook.com/sharer/sharer.php?u=https://bramanti.me/error-handling-javascript-es7-async-await/" title="Share on Facebook" rel="noreferrer noopener" target="_blank">
+              <svg viewBox="0 0 512 512"><path d="M288 192v-38.1c0-17.2 3.8-25.9 30.5-25.9H352V64h-55.9c-68.5 0-91.1 31.4-91.1 85.3V192h-45v64h45v192h83V256h56.4l7.6-64H288z"/></svg>
+            </a>
+            <a href="https://plus.google.com/share?url=https://bramanti.me/error-handling-javascript-es7-async-await/" title="Share on Google+" rel="noreferrer noopener" target="_blank">
+              <svg viewBox="0 0 128 128"><path d="M40.7 55.9v16.1c0 0 15.6 0 22 0C59.2 82.5 53.8 88.2 40.7 88.2c-13.3 0-23.7-10.8-23.7-24.2s10.4-24.2 23.7-24.2c7.1 0 11.6 2.5 15.8 5.9 3.3-3.3 3.1-3.8 11.6-11.9 -7.2-6.6-16.8-10.6-27.4-10.6C18.2 23.3 0 41.5 0 64c0 22.5 18.2 40.7 40.7 40.7 33.6 0 41.8-29.3 39-48.8H40.7zM113.9 56.7V42.6h-10.1v14.1H89.4v10.1h14.5v14.5h10.1V66.8H128V56.7H113.9z"/></svg>
+            </a>
+          </div>
+
+          
+            <div id="disqus_thread" class="article-comments"></div>
+            <script src="https://bramanti.disqus.com/embed.js" async defer></script>
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+          
+        </article>
+        <footer class="footer appear">
+  <p>
+    Chalk is a high quality, completely customizable, performant and 100% free
+    blog template for Jekyll built by Nielsen Ramon.
+    Download it <a href="https://github.com/nielsenramon/chalk" rel="noreferrer noopener" target="_blank" title="Download Chalk">here</a>.
+  </p>
+  
+</footer>
+
+      </div>
+    </div>
+  </main>
+  
+
+
+<script type="text/javascript">
+  window.heap=window.heap||[],heap.load=function(e,t){window.heap.appid=e,window.heap.config=t=t||{};var r=t.forceSSL||"https:"===document.location.protocol,a=document.createElement("script");a.type="text/javascript",a.async=!0,a.src=(r?"https:":"http:")+"//cdn.heapanalytics.com/js/heap-"+e+".js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(a,n);for(var o=function(e){return function(){heap.push([e].concat(Array.prototype.slice.call(arguments,0)))}},p=["addEventProperties","addUserProperties","clearEventProperties","identify","removeEventProperty","setEventProperties","track","unsetEventProperty"],c=0;c<p.length;c++)heap[p[c]]=o(p[c])};
+  heap.load("7009234");
+</script>
+
+
+<script src="/assets/vendor.js"></script>
+
+
+
+  <script src="/assets/webfonts.js"></script>
+
+
+
+
+  <script src="/assets/scrollappear.js"></script>
+
+
+
+<script src="/assets/application.js"></script>
+
+
+</body>
+</html>

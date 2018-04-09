@@ -1,4 +1,0 @@
----
-slug: eslint
-name: ESLint
----

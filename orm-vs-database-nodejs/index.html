@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>
+    Edward Bramanti
+    
+      | ORM vs. Database in Node.js
+    
+  </title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:title" content="ORM vs. Database in Node.js">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://bramanti.me/orm-vs-database-nodejs/">
+  <meta property="og:description" content="">
+  <meta property="og:site_name" content="Edward Bramanti">
+  <meta property="og:image" content="">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:url" content="https://bramanti.me/orm-vs-database-nodejs/">
+  <meta name="twitter:title" content="ORM vs. Database in Node.js">
+  <meta name="twitter:description" content="">
+  <meta name="twitter:image" content="">
+
+  <link href="https://bramanti.me/feed.xml" type="application/rss+xml" rel="alternate" title="Edward Bramanti Last 10 blog posts" />
+
+  
+
+  
+    <link rel="stylesheet" href="/assets/dark.css">
+
+  
+</head>
+
+<body>
+  <main>
+    <div class="grid grid-centered">
+      <div class="grid-cell">
+        <nav class="header-nav appear">
+  <a href="/" class="header-logo" title="Edward Bramanti">Edward Bramanti</a>
+  <ul class="header-links">
+    
+      <li>
+        <a href="/about">
+          About
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="https://represent.io/ebramanti" rel="noreferrer noopener" target="_blank">
+          Resume
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="https://github.com/jadengore" rel="noreferrer noopener" target="_blank">
+          Github
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="https://www.linkedin.com/in/edwardbramanti" rel="noreferrer noopener" target="_blank">
+          LinkedIn
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="mailto:edward@bramanti.org">
+          Email
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="/feed.xml" rel="noreferrer noopener" target="_blank" title="RSS">
+          <span class="icon icon-rss"></span>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+        <article class="article appear">
+          <header class="article-header">
+            <h1>ORM vs. Database in Node.js</h1>
+            <p></p>
+            <div class="article-list-footer">
+              <span class="article-list-date">
+                September 25, 2015
+              </span>
+              <span class="article-list-divider">-</span>
+              <span class="article-list-minutes">
+                
+                
+                  6 minute read
+                
+              </span>
+              
+                <span class="article-list-divider">-</span>
+                <div class="article-list-tags">
+                  
+                    <a href="/tag/javascript">javascript</a>
+                  
+                </div>
+              
+            </div>
+          </header>
+
+          <div class="article-content">
+            <p>I’ve been working a lot with Node lately. Currently, I’m building an API using Express.js, with PostgreSQL for the database and Bookshelf for the ORM. Overall, it’s been a good experience (I’ve worked with Backbone before, and Bookshelf is based on Backbone’s model/collection paradigm). However, I put my foot down today and said enough was enough. Debugging an issue I ran into became impassable. Helpful stack traces? Nope.</p>
+
+<p>As I dug into this issue, I’ve come to realize something as a Node developer: a lot of ORM/database issues are actually a side effect of using Javascript as a server-side language.</p>
+
+<p><a href="/assets/orm-vs-database-nodejs/elephant-bookshelf.jpg" data-rjs="/assets/orm-vs-database-nodejs/elephant-bookshelf.jpg" class="fluidbox-trigger">
+  <img src="/assets/orm-vs-database-nodejs/elephant-bookshelf.jpg" />
+</a></p>
+
+<h3 id="the-problem-integers">The Problem: Integers</h3>
+
+<p>My debugging journey started at an API resource that would take in an <code class="highlighter-rouge">id</code> and delete the specified resource. Let’s call this resource <code class="highlighter-rouge">potato</code>.</p>
+
+<p>You would be able to access an individual potato from this URI:</p>
+
+<blockquote>
+  <p><code class="highlighter-rouge">api/v1/potato/</code></p>
+</blockquote>
+
+<p>Here’s what the request looked like:</p>
+
+<blockquote>
+  <p><code class="highlighter-rouge">DELETE api/v1/potato/120382342342341</code></p>
+</blockquote>
+
+<p>The test that was failing should <code class="highlighter-rouge">404</code> if a resource is not found, so I made up some arbitrary id to show that the API would indeed respond with a <code class="highlighter-rouge">404</code> that the requested resource was not found. However, instead of getting a <code class="highlighter-rouge">404</code>, the API was giving me a <code class="highlighter-rouge">500</code>. In my test logs, the error <code class="highlighter-rouge">numutils.c at line 65</code> was all I had to work with. I dusted off my C hat and pressed on.</p>
+
+<p>My first inkling was to think this was a problem with V8 or one of the native libraries that I’m using in the project. Then, as I looked through the error output I saw <code class="highlighter-rouge">"routine":"pg_atoi"</code> in the response. <code class="highlighter-rouge">pg</code>? Clearly a Postgres issue. So I’ve narrowed the issue down to Bookshelf. After about 15 minutes of looking at the query I use on this route (it was a little more customized than a classic <code class="highlighter-rouge">save</code> command), I was unable to find anything wrong with it. In addition, all of my tests with well-formed id’s were passing.</p>
+
+<p>This isn’t the first time I’ve had an error message returned with a C error from Postgres. This was, however, the first time that I had an error message from Postgres that I was unable to solve by fixing improper syntax with my ORM. The time had finally come to take a dive into Postgres’ source code.</p>
+
+<h5 id="postgres-source-code-magic-and-numbers">Postgres Source Code: Magic, and Numbers</h5>
+
+<p><code class="highlighter-rouge">numutils.c at line 75</code> was all that I had to go off of. <a href="http://doxygen.postgresql.org/numutils_8c.html"><code class="highlighter-rouge">numutils.c</code></a> is a very important file to Postgres’ standard library, and in particular <code class="highlighter-rouge">pg_atoi</code>, the function in question for integer parsing. Here’s an excerpt of where my problem was:</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">case</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">int32</span><span class="p">):</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">errno</span> <span class="o">==</span> <span class="n">ERANGE</span>
+<span class="cp">#if defined(HAVE_LONG_INT_64)
+</span>    <span class="cm">/* won't get ERANGE on these with 64-bit longs... */</span>
+        <span class="o">||</span> <span class="n">l</span> <span class="o">&lt;</span> <span class="n">INT_MIN</span> <span class="o">||</span> <span class="n">l</span> <span class="o">&gt;</span> <span class="n">INT_MAX</span>
+<span class="cp">#endif
+</span>        <span class="p">)</span>
+        <span class="n">ereport</span><span class="p">(</span><span class="n">ERROR</span><span class="p">,</span>
+                <span class="p">(</span><span class="n">errcode</span><span class="p">(</span><span class="n">ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE</span><span class="p">),</span>
+        <span class="n">errmsg</span><span class="p">(</span><span class="s">"value </span><span class="se">\"</span><span class="s">%s</span><span class="se">\"</span><span class="s"> is out of range for type integer"</span><span class="p">,</span> <span class="n">s</span><span class="p">)));</span> <span class="c1">// line 75
+</span>    <span class="k">break</span><span class="p">;</span></code></pre></figure>
+
+<p>Now that I have localized the issue, it is clear that Postgres’ <code class="highlighter-rouge">MAX_INT</code> is less than the value of the <code class="highlighter-rouge">id</code> that I have for the potato above (<code class="highlighter-rouge">120382342342341</code>). After <a href="http://www.postgresql.org/docs/9.1/static/datatype-numeric.html">a quick read through Postgres’ numeric datatypes</a>, I learned that Postgres’ <code class="highlighter-rouge">MAX_INT</code> corresponds with signed 32-bit numbers (-2147483648 to +2147483647).</p>
+
+<p>This is an interesting Javascript problem. <a href="http://stackoverflow.com/questions/307179/what-is-javascripts-highest-integer-value-that-a-number-can-go-to-without-losin">Javascript’s <code class="highlighter-rouge">MAX_INT</code> is larger than Postgres</a>, which means that numbers like <code class="highlighter-rouge">120382342342341</code> are fair game in Javascript but not in PostgreSQL. The next logical step? Enforce Postgres’ integer requirements at the ORM level. Bookshelf clearly is not enforcing this, so I should just open a PR and add this feature, right?</p>
+
+<p>Bookshelf’s site describes the ORM as “designed to work well with PostgreSQL, MySQL, and SQLite3.” There are other databases beyond this list which also support Bookshelf’s ORM, which means that Bookshelf would have to enforce different rules for different datatypes. <strong>The ultimate problem is this: Javascript is weakly typed, and enforcing types at the ORM level goes against Javascript’s design</strong> (love it or hate it). I knew that the only way forward from this issue was a system that would allow for smarter validation of route parameters in my API.</p>
+
+<h3 id="the-answer-middleware">The Answer: Middleware</h3>
+
+<p>I came up with an elegant solution so that you are able to delete a potato, yet enforce PostgreSQL’s <code class="highlighter-rouge">MAX_INT</code> requirement. That way, you can elegantly handle the error of an out-of-bounds integer potato <code class="highlighter-rouge">id</code>. The answer, as stated in the header above, is middleware.</p>
+
+<p>Before I hit the potato route, we need a way to validate the route parameter according to the rules of what a well-formed <code class="highlighter-rouge">id</code> should look like. Since <code class="highlighter-rouge">id</code>s are autoincremented, we know that <code class="highlighter-rouge">id &gt; 0</code>. We now also know the limit of our <code class="highlighter-rouge">id</code> parameter: <code class="highlighter-rouge">MAX_INT</code> in Postgres.</p>
+
+<p>Beyond validating the range of the <code class="highlighter-rouge">id</code>, we also need to validate the numericality of the <code class="highlighter-rouge">id</code>. I’ve been using <a href="http://validatejs.org/">validate.js</a> to validate my request bodies, and the utility works well. However, route parameter validation is important as well, and validate.js does not provide this functionality. Without this validation users can pass in anything from “foo” to an out-of-bound Postgres integer as a route parameter. This can lead to unexpected behavior and non-descriptive <code class="highlighter-rouge">500</code> errors from the API.</p>
+
+<p>Here’s a solution for the potato example:</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">INT_MAX</span> <span class="o">=</span> <span class="mi">2147483647</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">isInvalidId</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">routeParam</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">integer</span> <span class="o">=</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">routeParam</span><span class="p">);</span>
+  <span class="k">return</span> <span class="nb">isNaN</span><span class="p">(</span><span class="nx">integer</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nx">integer</span> <span class="o">&gt;</span> <span class="nx">INT_MAX</span> <span class="o">||</span> <span class="nx">integer</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">idParamValidator</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">next</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">isInvalidId</span><span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">id</span><span class="p">))</span> <span class="p">{</span>
+      <span class="c1">// error out, 400 Bad Request</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="nx">next</span><span class="p">();</span>
+    <span class="p">}</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span> <span class="c1">// ignore this, not using id route param</span>
+    <span class="nx">next</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>As you can see, I validate that routes that make use of the <code class="highlighter-rouge">id</code> route param in Express falls into this middleware validation. We validate that this is an integer using <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/parseInt"><code class="highlighter-rouge">parseInt()</code></a>, and then check if the result of the parse is <code class="highlighter-rouge">NaN</code>. If not, then we validate that it falls in our range. If it passes, great! On to the API logic. If not, we <code class="highlighter-rouge">400</code> with some useful error data for the client (id out of range).</p>
+
+<h3 id="conclusion">Conclusion</h3>
+
+<h4 id="understand-your-apiormdatabase-data-differences">Understand your API/ORM/Database data differences</h4>
+<p>One important thing to remember about this post is that there was no way to plan for this issue because I did not understand the difference between Javascript and Postgres datatypes. <strong>Understanding the entire stack, including the database, avoids issues like this one.</strong> We may leverage ORMs in the day-to-day to save us the technical overhead of worrying about SQL, but we must consider the entire stack (in my case Javascript, Bookshelf and Postgres) and possible friction between its pieces if we are to create well-designed web applications.</p>
+
+<h4 id="validate-route-parameters-in-your-api">Validate route parameters in your API</h4>
+<p>I would say that most Javascript API engineers have great request body validation tools and leverage them well. Tools like <a href="http://validatejs.org/">validate.js</a> and <a href="https://github.com/hapijs/joi">joi</a> provide great schemas for validation. Nevertheless, <strong>it is just as important to validate your route parameters as your body parameters in an API.</strong> This safeguards you from issues like the one I have described in this post.</p>
+
+<p>My solution is a very simple middleware for one case, but as APIs get more complex, they could have multiple types of route parameters. <a href="https://github.com/ctavan/express-validator">express-validator</a> allows you to validate route parameters in Express.js with a nice library of tools. <a href="http://hapijs.com/tutorials/validation#path-parameters">Joi</a> does this as well, but you have to be using <a href="http://hapijs.com/">Hapi.js</a> to have this functionality. Ultimately, there are tools out there to do this for you. It is up to you to leverage them to safeguard your API.</p>
+
+          </div>
+
+          <div class="article-share">
+            
+            
+            <a href="https://twitter.com/home?status=ORM+vs.+Database+in+Node.js - https://bramanti.me/orm-vs-database-nodejs/" title="Share on Twitter" rel="noreferrer noopener" target="_blank">
+              <svg viewBox="0 0 512 512"><path d="M492 109.5c-17.4 7.7-36 12.9-55.6 15.3 20-12 35.4-31 42.6-53.6 -18.7 11.1-39.4 19.2-61.5 23.5C399.8 75.8 374.6 64 346.8 64c-53.5 0-96.8 43.4-96.8 96.9 0 7.6 0.8 15 2.5 22.1 -80.5-4-151.9-42.6-199.6-101.3 -8.3 14.3-13.1 31-13.1 48.7 0 33.6 17.2 63.3 43.2 80.7C67 210.7 52 206.3 39 199c0 0.4 0 0.8 0 1.2 0 47 33.4 86.1 77.7 95 -8.1 2.2-16.7 3.4-25.5 3.4 -6.2 0-12.3-0.6-18.2-1.8 12.3 38.5 48.1 66.5 90.5 67.3 -33.1 26-74.9 41.5-120.3 41.5 -7.8 0-15.5-0.5-23.1-1.4C62.8 432 113.7 448 168.3 448 346.6 448 444 300.3 444 172.2c0-4.2-0.1-8.4-0.3-12.5C462.6 146 479 129 492 109.5z"/></svg>
+            </a>
+            <a href="https://www.facebook.com/sharer/sharer.php?u=https://bramanti.me/orm-vs-database-nodejs/" title="Share on Facebook" rel="noreferrer noopener" target="_blank">
+              <svg viewBox="0 0 512 512"><path d="M288 192v-38.1c0-17.2 3.8-25.9 30.5-25.9H352V64h-55.9c-68.5 0-91.1 31.4-91.1 85.3V192h-45v64h45v192h83V256h56.4l7.6-64H288z"/></svg>
+            </a>
+            <a href="https://plus.google.com/share?url=https://bramanti.me/orm-vs-database-nodejs/" title="Share on Google+" rel="noreferrer noopener" target="_blank">
+              <svg viewBox="0 0 128 128"><path d="M40.7 55.9v16.1c0 0 15.6 0 22 0C59.2 82.5 53.8 88.2 40.7 88.2c-13.3 0-23.7-10.8-23.7-24.2s10.4-24.2 23.7-24.2c7.1 0 11.6 2.5 15.8 5.9 3.3-3.3 3.1-3.8 11.6-11.9 -7.2-6.6-16.8-10.6-27.4-10.6C18.2 23.3 0 41.5 0 64c0 22.5 18.2 40.7 40.7 40.7 33.6 0 41.8-29.3 39-48.8H40.7zM113.9 56.7V42.6h-10.1v14.1H89.4v10.1h14.5v14.5h10.1V66.8H128V56.7H113.9z"/></svg>
+            </a>
+          </div>
+
+          
+            <div id="disqus_thread" class="article-comments"></div>
+            <script src="https://bramanti.disqus.com/embed.js" async defer></script>
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+          
+        </article>
+        <footer class="footer appear">
+  <p>
+    Chalk is a high quality, completely customizable, performant and 100% free
+    blog template for Jekyll built by Nielsen Ramon.
+    Download it <a href="https://github.com/nielsenramon/chalk" rel="noreferrer noopener" target="_blank" title="Download Chalk">here</a>.
+  </p>
+  
+</footer>
+
+      </div>
+    </div>
+  </main>
+  
+
+
+<script type="text/javascript">
+  window.heap=window.heap||[],heap.load=function(e,t){window.heap.appid=e,window.heap.config=t=t||{};var r=t.forceSSL||"https:"===document.location.protocol,a=document.createElement("script");a.type="text/javascript",a.async=!0,a.src=(r?"https:":"http:")+"//cdn.heapanalytics.com/js/heap-"+e+".js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(a,n);for(var o=function(e){return function(){heap.push([e].concat(Array.prototype.slice.call(arguments,0)))}},p=["addEventProperties","addUserProperties","clearEventProperties","identify","removeEventProperty","setEventProperties","track","unsetEventProperty"],c=0;c<p.length;c++)heap[p[c]]=o(p[c])};
+  heap.load("7009234");
+</script>
+
+
+<script src="/assets/vendor.js"></script>
+
+
+
+  <script src="/assets/webfonts.js"></script>
+
+
+
+
+  <script src="/assets/scrollappear.js"></script>
+
+
+
+<script src="/assets/application.js"></script>
+
+
+</body>
+</html>

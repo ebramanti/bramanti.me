@@ -1,4 +1,0 @@
----
-slug: configuration
-name: Configuration
----

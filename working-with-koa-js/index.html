@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>
+    Edward Bramanti
+    
+      | Working with Koa.js
+    
+  </title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:title" content="Working with Koa.js">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://bramanti.me/working-with-koa-js/">
+  <meta property="og:description" content="">
+  <meta property="og:site_name" content="Edward Bramanti">
+  <meta property="og:image" content="">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:url" content="https://bramanti.me/working-with-koa-js/">
+  <meta name="twitter:title" content="Working with Koa.js">
+  <meta name="twitter:description" content="">
+  <meta name="twitter:image" content="">
+
+  <link href="https://bramanti.me/feed.xml" type="application/rss+xml" rel="alternate" title="Edward Bramanti Last 10 blog posts" />
+
+  
+
+  
+    <link rel="stylesheet" href="/assets/dark.css">
+
+  
+</head>
+
+<body>
+  <main>
+    <div class="grid grid-centered">
+      <div class="grid-cell">
+        <nav class="header-nav appear">
+  <a href="/" class="header-logo" title="Edward Bramanti">Edward Bramanti</a>
+  <ul class="header-links">
+    
+      <li>
+        <a href="/about">
+          About
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="https://represent.io/ebramanti" rel="noreferrer noopener" target="_blank">
+          Resume
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="https://github.com/jadengore" rel="noreferrer noopener" target="_blank">
+          Github
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="https://www.linkedin.com/in/edwardbramanti" rel="noreferrer noopener" target="_blank">
+          LinkedIn
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="mailto:edward@bramanti.org">
+          Email
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="/feed.xml" rel="noreferrer noopener" target="_blank" title="RSS">
+          <span class="icon icon-rss"></span>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+        <article class="article appear">
+          <header class="article-header">
+            <h1>Working with Koa.js</h1>
+            <p></p>
+            <div class="article-list-footer">
+              <span class="article-list-date">
+                April 29, 2015
+              </span>
+              <span class="article-list-divider">-</span>
+              <span class="article-list-minutes">
+                
+                
+                  7 minute read
+                
+              </span>
+              
+                <span class="article-list-divider">-</span>
+                <div class="article-list-tags">
+                  
+                    <a href="/tag/javascript">javascript</a>
+                  
+                </div>
+              
+            </div>
+          </header>
+
+          <div class="article-content">
+            <p>I recently got my feet wet with <a href="http://koajs.com/">Koa.js</a>, a next-generation web framework made by the creators of Express.</p>
+
+<p><a href="/assets/working-with-koa-js/koajs.png" data-rjs="/assets/working-with-koa-js/koajs.png" class="fluidbox-trigger">
+  <img src="/assets/working-with-koa-js/koajs.png" alt="Koa logo" />
+</a></p>
+
+<p>My project was to design a Koa server for <a href="https://github.com/TechEmpower/FrameworkBenchmarks/">TechEmpower’s Framework Benchmarks</a>. I’m going to use this blog post to sound off on some of the things I like about Koa, and some of the things I don’t like. The code for the server I contributed to TechEmpower’s benchmark can be found <a href="blob/master/frameworks/JavaScript/koa/app.js">here</a>.</p>
+
+<p><strong>TL;DR</strong>: Koa is a great framework that improves productivity at the expense of making you think differently as a Node developer.</p>
+
+<h3 id="the-good">The Good</h3>
+
+<h4 id="extremely-minimal">Extremely Minimal</h4>
+<p>One of the big promises of Koa is a add-what-you-need model. Therefore, Koa bundles no middleware whatsoever in its core package. This approach is good because it allows you to pick and choose modules that are most important to you. Express has made strides to separate out middleware as well, but Koa has been designed with this mindset, and it plays to its favor.</p>
+
+<h4 id="freedom-from-callback-hell">Freedom from Callback Hell</h4>
+<p>For any Node.js developer, Koa is going to demand you to think differently. This is a really good thing in the long run: Koa completely ditches callbacks, and instead opts to use generators from the upcoming ECMAScript Harmony (ES6) release. Koa even requires a special build flag in Node to run:</p>
+
+<figure class="highlight"><pre><code class="language-sh" data-lang="sh">node <span class="nt">--harmony</span> app.js
+
+<span class="c"># Bonus: io.js has necessary ES6 features already,</span>
+<span class="c"># No need for flag.</span>
+iojs app.js</code></pre></figure>
+
+<p>Most of understanding Koa, as mentioned in the <strong>tl;dr</strong> above, has to do with understanding how generators work. If you don’t know how generators work in JavaScript, <a href="http://davidwalsh.name/es6-generators">David Walsh wrote a great article explaining ES6’s generators</a>.</p>
+
+<p>Below I’ve included an example of how the <code class="highlighter-rouge">yield</code> keyword allows you to avoid having to write long, nested callbacks in order to get the information you need. In this function, I set a random world’s property <code class="highlighter-rouge">randomNumber</code> to a new random number in the Mongo database (note: the <code class="highlighter-rouge">*</code> notation denotes an ES6 generator function).</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">function</span> <span class="o">*</span><span class="nx">worldUpdateQuery</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">randomId</span> <span class="o">=</span> <span class="nx">getRandomNumber</span><span class="p">();</span>
+  <span class="kd">var</span> <span class="nx">randomNumber</span> <span class="o">=</span> <span class="nx">getRandomNumber</span><span class="p">();</span>
+  <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="k">yield</span> <span class="nx">worlds</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span>
+    <span class="p">{</span><span class="na">id</span><span class="p">:</span> <span class="nx">randomId</span><span class="p">},</span>
+    <span class="p">{</span><span class="na">$set</span><span class="p">:</span> <span class="p">{</span><span class="na">randomNumber</span><span class="p">:</span> <span class="nx">randomNumber</span><span class="p">}}</span>
+  <span class="p">);</span>
+  <span class="k">return</span> <span class="p">{</span>
+    <span class="na">id</span><span class="p">:</span> <span class="nx">randomId</span><span class="p">,</span>
+    <span class="na">randomNumber</span><span class="p">:</span> <span class="nx">randomNumber</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>In this case, <code class="highlighter-rouge">worlds.update()</code> is not the best example of the use of a callback, as it will only return a count of the records modified. However, take a look at how I write my find query for world models, you normally require a callback function in order to retrieve the data from a find.</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">function</span> <span class="o">*</span><span class="nx">worldQuery</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="k">yield</span> <span class="nx">worlds</span><span class="p">.</span><span class="nx">findOne</span><span class="p">({</span><span class="na">id</span><span class="p">:</span> <span class="nx">getRandomNumber</span><span class="p">()},</span> <span class="s1">'-_id'</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>With <code class="highlighter-rouge">yield</code>, it executes and returns this asynchronous callback so that the data you need is set properly.</p>
+
+<p>This approach minimizes the amount of nesting you normally need for callbacks, and makes your code significantly more readable. This comes at the cost of approaching Node.js development differently. However, I believe the cost is worth it, and generator functions are the future of JavaScript server frameworks.</p>
+
+<h4 id="contexts">Contexts</h4>
+<p>Koa takes an interesting approach to contexts. Koa encapsulates Node’s request and response objects into a single object. There’s a ton of helper methods for building out great APIs, which is a huge plus (API’s rock, no joke). Ultimately, this approach simplifies requests and responses in general.</p>
+
+<p>First, let’s take a look at a Koa context example from the Koa.js docs. You can read up more on the APIs for this Context object <a href="http://koajs.com/#context">here</a>.</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="kd">function</span> <span class="o">*</span><span class="p">(){</span>
+  <span class="k">this</span><span class="p">;</span> <span class="c1">// is the Context</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">request</span><span class="p">;</span> <span class="c1">// is a koa Request</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">response</span><span class="p">;</span> <span class="c1">// is a koa Response</span>
+<span class="p">});</span></code></pre></figure>
+
+<p>In TechEmpower’s Framework Benchmarks, there are requirements that each framework has to meet in order to be included. 6 different routes must be implemented. Some examples are JSON serialization, plaintext serving, and database queries and updates. Let’s take a look at the route handler I wrote for JSON serialization.</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">function</span> <span class="o">*</span><span class="nx">jsonHandler</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="s1">'Server'</span><span class="p">,</span> <span class="s1">'Koa'</span><span class="p">);</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">body</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">message</span><span class="p">:</span> <span class="s2">"Hello, world!"</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Koa’s APIs are written so that all I have to do is set <code class="highlighter-rouge">this.body</code> to whatever I want it to return. Since the <code class="highlighter-rouge">request</code> and <code class="highlighter-rouge">response</code> objects are all encapsulated together, it is easy to add data to the response. Normally, web frameworks have API calls that allow you to respond (<code class="highlighter-rouge">reply</code> for Hapi and <code class="highlighter-rouge">res.send</code> for Express, to name a few). Koa simply yields the response object with <code class="highlighter-rouge">this.body</code> (in this example) set to a JSON object. Since Koa functions are designed to have a unified model for middleware, access to these request and response objects are simple and intuitive.</p>
+
+<h4 id="cascading">Cascading</h4>
+<p>I’m only going to talk about this briefly, since I was unable to try this out in my own work. Cascading in Koa’s middleware functions is awesome. Koa can yield downstream to other functions until one function returns. Control flows back upstream when this is completed. This is difficult to do with callbacks, and Koa shows how cascading can be accomplished more efficiently with ES6 generators.</p>
+
+<p><a href="http://koajs.com/#cascading">Here’s a link to an example cascade from Koa.js’ website</a>. Pay close attention to the <code class="highlighter-rouge">yield next</code> and how the control flow changes how middleware is normally written in classic Node server frameworks.</p>
+
+<h3 id="the-bad">The Bad</h3>
+
+<h4 id="shaky-module-support">Shaky Module Support</h4>
+<p>Documentation for most modules you need are not written to help you with Koa. They are written to suitably assist your navigation through callback hell. While Koa does its best to mitigate the issues of this new approach, you are going to have to spend extra time digging to set up your modules properly. While all modules are technically supported out of the box, you may have to defer to wrappers to make things easier.</p>
+
+<p>An example of this is that I used Monk for my MongoDB driver for my Koa server. Without writing custom generator functions, Monk would not work properly for me. This led to frustration and extra code, which to me seemed that Koa was faltering on its promises. However, after some time searching, I found TJ Holowaychuk’s <a href="https://github.com/tj/co-monk">co-monk</a> wrapper that allowed me to easily use Monk the Koa way.</p>
+
+<p>However, things aren’t always that easy. I was trying a different MongoDB driver earlier on in my project, and I ended up having to write stuff like this:</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="k">yield</span> <span class="kd">function</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">mongo</span><span class="p">.</span><span class="nx">collection</span><span class="p">(</span><span class="s1">'world'</span><span class="p">).</span><span class="nx">update</span><span class="p">(</span>
+      <span class="p">{</span><span class="na">id</span><span class="p">:</span> <span class="nx">randomId</span><span class="p">},</span>
+      <span class="p">{</span><span class="na">randomNumber</span><span class="p">:</span> <span class="nx">randomNumber</span><span class="p">},</span>
+      <span class="nx">callback</span>
+    <span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>When you compare this to my query functions I wrote in the examples above, wrapping this manually is quite a pain. While this does still minimize the amount of code you have to write, having to do this all the time can quickly become a chore.</p>
+
+<h4 id="not-the-best-for-newbies">Not the Best for Newbies</h4>
+<p>Working in Koa was incredibly rewarding for two reasons: it made me a better web developer, and it demanded that I have a better understanding of how web frameworks function. However, for a new programmer approaching Koa as their first web framework, it is very unforgiving.</p>
+
+<p>If you haven’t learned generators formally, please go learn them. Even looking at ES6’s implementation may not be the best approach. I learned generators in Python for my Programming Languages class at LMU. I encourage you to check out <a href="http://cs.lmu.edu/~ray/notes/intropython/">these notes</a> from my professor, Dr. Toal. Look under the <code class="highlighter-rouge">Generators</code> section.</p>
+
+<p>Koa’s lack of basic middleware functions was daunting at first. Not understanding that routes were not included with Koa was aggravating. <em>“Why won’t my route respond? Oh, because there’s no route middleware functions.”</em> Basic questions like this demand that you spend a lot of time understanding Koa’s methodologies and design decisions. It’s not as easy to get a server running in 5 seconds as Node frameworks normally promise.</p>
+
+<p>If this is your first time approaching Node server development, or want to just write a quick and simple server, I highly recommend <a href="http://hapijs.com">Hapi.js</a>. It’s a lot more forgiving, the documentation absolutely rocks, and I enjoy developing in it more than Express. I’ve recommended it to many friends working on APIs and web servers, and they have (for the most part) enjoyed working in it.</p>
+
+<h3 id="conclusion">Conclusion</h3>
+<p>Koa is the only framework I can name that plans to put ES6 to good use. It has made some great design decisions: its lightweight, it avoids nested callbacks, and it is uniquely suited for modern API development. Designing this for TechEmpower’s framework benchmarks taught me a lot about the advantages of generators, especially when it comes to database queries (automatic parallel execution of queries using the <code class="highlighter-rouge">yield</code> keyword is awesome).</p>
+
+<p>If you’re an experienced/semi-experienced Node.js developer, I highly encourage you to try and write a simple API in it. There’s a ton to love, and the number of well-documented middleware modules and wrappers is <a href="https://github.com/koajs/koa/wiki">growing</a>. I hope to use Koa on a future project, as it seemed to handle my needs well and minimized the amount of code I needed to write.</p>
+
+          </div>
+
+          <div class="article-share">
+            
+            
+            <a href="https://twitter.com/home?status=Working+with+Koa.js - https://bramanti.me/working-with-koa-js/" title="Share on Twitter" rel="noreferrer noopener" target="_blank">
+              <svg viewBox="0 0 512 512"><path d="M492 109.5c-17.4 7.7-36 12.9-55.6 15.3 20-12 35.4-31 42.6-53.6 -18.7 11.1-39.4 19.2-61.5 23.5C399.8 75.8 374.6 64 346.8 64c-53.5 0-96.8 43.4-96.8 96.9 0 7.6 0.8 15 2.5 22.1 -80.5-4-151.9-42.6-199.6-101.3 -8.3 14.3-13.1 31-13.1 48.7 0 33.6 17.2 63.3 43.2 80.7C67 210.7 52 206.3 39 199c0 0.4 0 0.8 0 1.2 0 47 33.4 86.1 77.7 95 -8.1 2.2-16.7 3.4-25.5 3.4 -6.2 0-12.3-0.6-18.2-1.8 12.3 38.5 48.1 66.5 90.5 67.3 -33.1 26-74.9 41.5-120.3 41.5 -7.8 0-15.5-0.5-23.1-1.4C62.8 432 113.7 448 168.3 448 346.6 448 444 300.3 444 172.2c0-4.2-0.1-8.4-0.3-12.5C462.6 146 479 129 492 109.5z"/></svg>
+            </a>
+            <a href="https://www.facebook.com/sharer/sharer.php?u=https://bramanti.me/working-with-koa-js/" title="Share on Facebook" rel="noreferrer noopener" target="_blank">
+              <svg viewBox="0 0 512 512"><path d="M288 192v-38.1c0-17.2 3.8-25.9 30.5-25.9H352V64h-55.9c-68.5 0-91.1 31.4-91.1 85.3V192h-45v64h45v192h83V256h56.4l7.6-64H288z"/></svg>
+            </a>
+            <a href="https://plus.google.com/share?url=https://bramanti.me/working-with-koa-js/" title="Share on Google+" rel="noreferrer noopener" target="_blank">
+              <svg viewBox="0 0 128 128"><path d="M40.7 55.9v16.1c0 0 15.6 0 22 0C59.2 82.5 53.8 88.2 40.7 88.2c-13.3 0-23.7-10.8-23.7-24.2s10.4-24.2 23.7-24.2c7.1 0 11.6 2.5 15.8 5.9 3.3-3.3 3.1-3.8 11.6-11.9 -7.2-6.6-16.8-10.6-27.4-10.6C18.2 23.3 0 41.5 0 64c0 22.5 18.2 40.7 40.7 40.7 33.6 0 41.8-29.3 39-48.8H40.7zM113.9 56.7V42.6h-10.1v14.1H89.4v10.1h14.5v14.5h10.1V66.8H128V56.7H113.9z"/></svg>
+            </a>
+          </div>
+
+          
+            <div id="disqus_thread" class="article-comments"></div>
+            <script src="https://bramanti.disqus.com/embed.js" async defer></script>
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+          
+        </article>
+        <footer class="footer appear">
+  <p>
+    Chalk is a high quality, completely customizable, performant and 100% free
+    blog template for Jekyll built by Nielsen Ramon.
+    Download it <a href="https://github.com/nielsenramon/chalk" rel="noreferrer noopener" target="_blank" title="Download Chalk">here</a>.
+  </p>
+  
+</footer>
+
+      </div>
+    </div>
+  </main>
+  
+
+
+<script type="text/javascript">
+  window.heap=window.heap||[],heap.load=function(e,t){window.heap.appid=e,window.heap.config=t=t||{};var r=t.forceSSL||"https:"===document.location.protocol,a=document.createElement("script");a.type="text/javascript",a.async=!0,a.src=(r?"https:":"http:")+"//cdn.heapanalytics.com/js/heap-"+e+".js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(a,n);for(var o=function(e){return function(){heap.push([e].concat(Array.prototype.slice.call(arguments,0)))}},p=["addEventProperties","addUserProperties","clearEventProperties","identify","removeEventProperty","setEventProperties","track","unsetEventProperty"],c=0;c<p.length;c++)heap[p[c]]=o(p[c])};
+  heap.load("7009234");
+</script>
+
+
+<script src="/assets/vendor.js"></script>
+
+
+
+  <script src="/assets/webfonts.js"></script>
+
+
+
+
+  <script src="/assets/scrollappear.js"></script>
+
+
+
+<script src="/assets/application.js"></script>
+
+
+</body>
+</html>
